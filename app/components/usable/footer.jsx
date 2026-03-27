@@ -77,6 +77,11 @@ export default function Footer() {
                     Animal Wellness
                   </a>
                 </li>
+                <li>
+                  <a href="/tracking" className="text-gray-300 hover:text-white transition">
+                    Tracking
+                  </a>
+                </li>
               </ul>
             </div>
 

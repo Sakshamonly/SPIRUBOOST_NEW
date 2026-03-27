@@ -36,12 +36,18 @@ export default function navbar() {
     { label: "Products", href: "/products" },
     { label: "Farms", href: "/farm" },
     { label: "About", href: "/about" },
+    { label: "Tracking", href: "/tracking" },
     { label: "Contact", href: "/contact" },
   ]
 
-  const mobileMenuItems = [
+  const mobileNavLinks = [
+    { label: "Wellness", href: "/wellness" },
+    { label: "Products", href: "/products" },
+    { label: "Farms", href: "/farm" },
+    { label: "About", href: "/about" },
+    { label: "Tracking", href: "/tracking" },
+    { label: "Contact", href: "/contact" },
     { label: "Account", href: "/login" },
-    { label: "Tracking", href: "/track" },
   ]
 
   return (
@@ -95,18 +101,6 @@ export default function navbar() {
               >
                 <ShoppingCart className="h-6 w-6 stroke-1.5" />
               </button>
-              <button
-                onClick={toggleWishlist}
-                className="p-3 text-gray-600 hover:text-gray-800 transition-all duration-300"
-              >
-                <Heart className="h-6 w-6 stroke-1.5" />
-              </button>
-              <Link
-                href="/track"
-                className="p-3 text-gray-600 hover:text-gray-800 transition-all duration-300"
-              >
-                <Package className="h-6 w-6 stroke-1.5" />
-              </Link>
               <Link
                 href="/login"
                 className="p-3 text-gray-600 hover:text-gray-800 transition-all duration-300"
@@ -130,10 +124,10 @@ export default function navbar() {
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
               <Link href="/" className="flex items-center">
                 <Image
-                  src="/Spiruboost.png"
+                  src="/logo.png"
                   alt="Spiruboost Logo"
-                  width={170}
-                  height={170}
+                  width={200}
+                  height={150}
                   className="object-contain drop-shadow-lg"
                   priority
                 />
@@ -141,7 +135,7 @@ export default function navbar() {
             </div>
 
             {/* Right - Icons */}
-            <div className="flex items-center mr-2">
+            <div className="flex items-center gap-1">
               <button
                 onClick={toggleSearch}
                 className="p-2 text-gray-600 hover:text-gray-800 transition-all duration-300"
@@ -172,9 +166,9 @@ export default function navbar() {
         >
           <div className="h-full flex flex-col">
             {/* Fixed Header */}
-            <div className="flex-shrink-0 p-6 border-b border-white/30">
+            <div className="shrink-0 p-6 border-b border-white/30">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">Menu</h2>
+                <h2 className="text-3xl font-bold bg-linear-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">Menu</h2>
                 <button
                   onClick={toggleMenu}
                   className="p-2 hover:bg-white/30 backdrop-blur-sm rounded-xl transition-all duration-200"
@@ -186,38 +180,9 @@ export default function navbar() {
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-6">
-              {/* Menu Items with Text Only */}
-              <div className="space-y-4 mb-8">
-                {mobileMenuItems.map((item) => (
-                  <div key={item.label}>
-                    {item.onClick ? (
-                      <button
-                        onClick={() => {
-                          item.onClick()
-                          toggleMenu()
-                        }}
-                        className="flex items-center space-x-4 w-full text-left px-3 py-2 text-gray-600 hover:text-gray-800 transition-all duration-200 relative group text-sm font-medium"
-                      >
-                        {item.label}
-                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300 group-hover:w-full"></span>
-                      </button>
-                    ) : (
-                      <Link
-                        href={item.href}
-                        onClick={toggleMenu}
-                        className="flex items-center space-x-4 px-3 py-2 text-gray-600 hover:text-gray-800 transition-all duration-300 relative group text-sm font-medium"
-                      >
-                        {item.label}
-                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300 group-hover:w-full"></span>
-                      </Link>
-                    )}
-                  </div>
-                ))}
-              </div>
-
               {/* Navigation Links */}
               <div className="space-y-2">
-                {navLinks.map((link, index) => (
+                {mobileNavLinks.map((link, index) => (
                   <div key={link.label}>
                     <Link
                       href={link.href}
@@ -226,7 +191,7 @@ export default function navbar() {
                     >
                       {link.label}
                     </Link>
-                    {index < navLinks.length - 1 && <div className="w-full h-px bg-white/30 my-2"></div>}
+                    {index < mobileNavLinks.length - 1 && <div className="w-full h-px bg-white/30 my-2"></div>}
                   </div>
                 ))}
               </div>
