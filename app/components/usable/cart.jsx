@@ -1,9 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { X, Plus, Minus } from "lucide-react"
 
 export default function CartSidebar({ isOpen, onClose }) {
+  const router = useRouter()
   const [cartItems, setCartItems] = useState([
     { id: 1, name: "Spirulina Powder", price: 1999, quantity: 2, image: "/placeholder.svg?height=64&width=64" },
     { id: 2, name: "Spirulina Tablets", price: 1499, quantity: 1, image: "/placeholder.svg?height=64&width=64" },
@@ -81,7 +83,13 @@ export default function CartSidebar({ isOpen, onClose }) {
               <span className="text-black">Total:</span>
               <span className="text-black">INR {(calculateTotal() / 100).toFixed(2)}</span>
             </div>
-            <button className="w-full bg-green-100 text-green-800 py-3 rounded-lg hover:bg-green-200 transition-colors duration-200 border border-green-200 font-medium">
+            <button 
+              onClick={() => {
+                onClose()
+                router.push('/checkout')
+              }}
+              className="w-full bg-green-100 text-green-800 py-3 rounded-lg hover:bg-green-200 transition-colors duration-200 border border-green-200 font-medium"
+            >
               Checkout
             </button>
           </div>

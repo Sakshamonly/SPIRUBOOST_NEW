@@ -34,18 +34,18 @@ export default function navbar() {
   const navLinks = [
     { label: "Wellness", href: "/wellness" },
     { label: "Products", href: "/products" },
+    { label: "Blog", href: "/blog" },
     { label: "Farms", href: "/farm" },
     { label: "About", href: "/about" },
-    { label: "Tracking", href: "/tracking" },
     { label: "Contact", href: "/contact" },
   ]
 
   const mobileNavLinks = [
     { label: "Wellness", href: "/wellness" },
     { label: "Products", href: "/products" },
+    { label: "Blog", href: "/blog" },
     { label: "Farms", href: "/farm" },
     { label: "About", href: "/about" },
-    { label: "Tracking", href: "/tracking" },
     { label: "Contact", href: "/contact" },
     { label: "Account", href: "/login" },
   ]
@@ -53,13 +53,13 @@ export default function navbar() {
   return (
     <>
       {/* Main Navbar */}
-      <nav className="sticky top-0 z-40 w-full bg-white/10 backdrop-blur-xl border-b border-white/20 shadow-xl">
+      <nav className="sticky top-0 z-40 w-full bg-gradient-to-r from-orange-50/70 via-green-50/70 to-orange-100/70 shadow-lg border-b border-orange-100/50 backdrop-blur-md">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           {/* Desktop Layout */}
           <div className="hidden md:flex items-center h-20 px-2 relative w-full">
             {/* Left - Logo */}
-            <div className="flex-shrink-0 flex items-center absolute left-0 top-1/2 -translate-y-1/2" style={{ minWidth: 260 }}>
-              <Link href="/" className="flex items-center space-x-2">
+            <div className="shrink-0 flex items-center absolute left-0 top-1/2 -translate-y-1/2" style={{ minWidth: 260 }}>
+              <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity duration-300">
                 <Image
                   src="/logo.png"
                   alt="Spiruboost Logo"
@@ -73,39 +73,39 @@ export default function navbar() {
 
             {/* Center - Navigation Links */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-              <div className="flex items-baseline space-x-10">
+              <div className="flex items-baseline space-x-12">
                 {navLinks.map((link) => (
                   <Link
                     key={link.label}
                     href={link.href}
-                    className="text-gray-700 hover:text-gray-900 px-3 py-2 text-base font-bold tracking-wide transition-all duration-300 hover:scale-105 relative group"
+                    className="text-gray-800 hover:text-gray-950 px-2 py-2 text-base font-semibold tracking-wide transition-all duration-300 relative group whitespace-nowrap"
                   >
                     {link.label}
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300 group-hover:w-full"></span>
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
                   </Link>
                 ))}
               </div>
             </div>
 
             {/* Right - Icons */}
-            <div className="flex-shrink-0 flex items-center absolute right-0 top-1/2 -translate-y-1/2" style={{ minWidth: 260 }}>
+            <div className="shrink-0 flex items-center absolute right-0 top-1/2 -translate-y-1/2" style={{ minWidth: 260 }}>
               <button
                 onClick={toggleSearch}
-                className="p-3 text-gray-600 hover:text-gray-800 transition-all duration-300"
+                className="p-3 text-gray-700 hover:text-gray-900 transition-all duration-300 hover:scale-110"
               >
-                <Search className="h-6 w-6 stroke-1.5" />
+                <Search className="h-5 w-5 stroke-2" />
               </button>
               <button
                 onClick={toggleCart}
-                className="p-3 text-gray-600 hover:text-gray-800 transition-all duration-300"
+                className="p-3 text-gray-700 hover:text-gray-900 transition-all duration-300 hover:scale-110"
               >
-                <ShoppingCart className="h-6 w-6 stroke-1.5" />
+                <ShoppingCart className="h-5 w-5 stroke-2" />
               </button>
               <Link
                 href="/login"
-                className="p-3 text-gray-600 hover:text-gray-800 transition-all duration-300"
+                className="p-3 text-gray-700 hover:text-gray-900 transition-all duration-300 hover:scale-110"
               >
-                <User className="h-6 w-6 stroke-1.5" />
+                <User className="h-5 w-5 stroke-2" />
               </Link>
             </div>
           </div>
@@ -115,14 +115,14 @@ export default function navbar() {
             {/* Left - Hamburger */}
             <button
               onClick={toggleMenu}
-              className="p-3 text-gray-600 hover:text-gray-800 transition-all duration-300 z-10"
+              className="p-3 text-gray-700 hover:text-gray-900 transition-all duration-300 z-10"
             >
               <HamburgerIcon isOpen={isMenuOpen} />
             </button>
 
             {/* Center - Logo */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-              <Link href="/" className="flex items-center">
+              <Link href="/" className="flex items-center hover:opacity-80 transition-opacity duration-300">
                 <Image
                   src="/logo.png"
                   alt="Spiruboost Logo"
@@ -138,15 +138,15 @@ export default function navbar() {
             <div className="flex items-center gap-1">
               <button
                 onClick={toggleSearch}
-                className="p-2 text-gray-600 hover:text-gray-800 transition-all duration-300"
+                className="p-2 text-gray-700 hover:text-gray-900 transition-all duration-300"
               >
-                <Search className="h-7 w-7 stroke-1.5" />
+                <Search className="h-6 w-6 stroke-2" />
               </button>
               <button
                 onClick={toggleCart}
-                className="p-0.5 text-gray-600 hover:text-gray-800 transition-all duration-300"
+                className="p-2 text-gray-700 hover:text-gray-900 transition-all duration-300"
               >
-                <ShoppingCart className="h-7 w-7 stroke-1.5" />
+                <ShoppingCart className="h-6 w-6 stroke-2" />
               </button>
             </div>
           </div>
@@ -162,18 +162,18 @@ export default function navbar() {
 
         {/* Mobile Menu Sidebar */}
         <div
-          className={`absolute left-0 top-0 h-full w-80 bg-white/90 backdrop-blur-xl shadow-2xl transform transition-transform duration-300 overflow-hidden border-r border-white/20 ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
+          className={`absolute left-0 top-0 h-full w-80 bg-gradient-to-b from-orange-50 via-green-50 to-orange-100 shadow-2xl transform transition-transform duration-300 overflow-hidden border-r border-orange-100 ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
           <div className="h-full flex flex-col">
             {/* Fixed Header */}
-            <div className="shrink-0 p-6 border-b border-white/30">
+            <div className="shrink-0 p-6 border-b border-orange-200">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-3xl font-bold bg-linear-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">Menu</h2>
+                <h2 className="text-3xl font-bold text-gray-800">Menu</h2>
                 <button
                   onClick={toggleMenu}
-                  className="p-2 hover:bg-white/30 backdrop-blur-sm rounded-xl transition-all duration-200"
+                  className="p-2 hover:bg-orange-200/50 rounded-xl transition-all duration-200"
                 >
-                  <X className="h-6 w-6 stroke-1.5 text-gray-600" />
+                  <X className="h-6 w-6 stroke-2 text-gray-700" />
                 </button>
               </div>
             </div>
@@ -187,11 +187,11 @@ export default function navbar() {
                     <Link
                       href={link.href}
                       onClick={toggleMenu}
-                      className="block p-3 text-lg font-bold tracking-wide text-gray-600 hover:text-gray-800 transition-all duration-200"
+                      className="block p-3 text-lg font-semibold text-gray-700 hover:text-gray-900 hover:bg-white/40 rounded-lg transition-all duration-200"
                     >
                       {link.label}
                     </Link>
-                    {index < mobileNavLinks.length - 1 && <div className="w-full h-px bg-white/30 my-2"></div>}
+                    {index < mobileNavLinks.length - 1 && <div className="w-full h-px bg-orange-200/50 my-2"></div>}
                   </div>
                 ))}
               </div>

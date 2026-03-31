@@ -2,63 +2,10 @@
 
 import React, { useState } from "react"
 import { useRouter } from "next/navigation"
+import { ProductCard } from "../components/usable/product-card"
 import CartSidebar from "../components/usable/cart"
 import Footer from "../components/usable/footer"
 import Navbar from "../components/usable/navbar"
-
-function ProductCard({ product, onAddToCart, onBuyNow, onProductClick }) {
-  return (
-    <div className="h-full flex flex-col bg-linear-to-br from-green-50 via-white to-green-50 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden group">
-      {/* Image */}
-      <div className="relative h-90">
-        <button className="absolute inset-0 w-full h-full" onClick={() => onProductClick(product.id)} aria-label={`View ${product.name}`}>
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-full object-cover"
-          />
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className="p-4 bg-white/80 backdrop-blur-sm flex-1 flex flex-col">
-        <h3
-          className="text-base font-bold text-gray-800 mb-2 cursor-pointer hover:text-blue-600 transition-colors duration-200 line-clamp-2 uppercase tracking-wide"
-          onClick={() => onProductClick(product.id)}
-          style={{ fontFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto", fontWeight: 700 }}
-        >
-          {product.name}
-        </h3>
-
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-gray-400 line-through text-sm font-medium">₹{Math.round(product.price * 1.11).toLocaleString('en-IN')}</span>
-          <span className="text-green-600 font-bold text-lg">₹{product.price.toLocaleString('en-IN')}</span>
-        </div>
-
-        <div className="flex items-center gap-2 mb-4">
-          <div className="flex text-yellow-400">{"★".repeat(5)}</div>
-          <span className="text-gray-500 text-sm font-medium">128 Reviews</span>
-        </div>
-
-        <div className="mt-auto flex gap-3">
-          <button
-            onClick={() => onAddToCart(product.id)}
-            className="flex-1 bg-gray-100 text-gray-800 font-semibold text-sm py-2 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-sm border border-gray-200 hover:shadow"
-          >
-            Add to Cart
-          </button>
-
-          <button
-            onClick={() => onBuyNow(product.id)}
-            className="flex-1 bg-green-100 text-green-800 font-semibold text-sm py-2 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md border border-green-200"
-          >
-            Order Now
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 export default function ProductsPage() {
   const router = useRouter()
@@ -91,7 +38,7 @@ export default function ProductsPage() {
   }
 
   const handleProductClick = (productId) => {
-    router.push(`/products/${productId}`)
+    router.push('/product_ind')
   }
 
   const handleCloseCart = () => setIsCartOpen(false)
