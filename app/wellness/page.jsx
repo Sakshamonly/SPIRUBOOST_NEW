@@ -348,9 +348,13 @@ export default function SpiruboostWellness() {
             <p className="text-sm font-semibold tracking-widest text-teal-200 uppercase mb-2">Spirulina Nature Superfood</p>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-4 text-white">Nature's <span className="text-teal-300">Blueprint</span></h1>
             <p className="text-lg md:text-xl text-white/95 max-w-3xl mx-auto leading-relaxed mb-8 drop-shadow-lg">Precision-engineered bio-algae synthesized for maximum cellular absorption — the ultimate synthesis of ancient vitality and modern science.</p>
-            <div className="flex gap-4 justify-center flex-col sm:flex-row">
-              <button className="px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-full shadow-lg transition-all">Get Started</button>
-              <button className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-full border border-white/20">Learn More</button>
+            <div className="flex gap-4 justify-center">
+              <button onClick={() => {
+                const molecularSection = document.querySelector('[data-section="molecular"]');
+                if (molecularSection) {
+                  molecularSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }} className="px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-full shadow-lg transition-all">Get Started</button>
             </div>
           </div>
         </div>
@@ -363,7 +367,7 @@ export default function SpiruboostWellness() {
       </section>
 
       {/* ===== ABOUT SPIRULINA - The Molecular Forest Within ===== */}
-      <section className="py-20 md:py-28 bg-white">
+      <section className="py-20 md:py-28 bg-white" data-section="molecular">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           {/* Centered Heading */}
           <div className="mb-16 text-center">
@@ -471,9 +475,9 @@ export default function SpiruboostWellness() {
             Join thousands of wellness enthusiasts experiencing the transformative power of Spirulina. Start your journey to optimal health today.
           </p>
           <div className="flex gap-4 justify-center flex-col sm:flex-row pt-8">
-            <button className="px-8 py-4 text-slate-900 font-bold transition-all duration-300 hover:bg-slate-900 hover:text-white border-2 border-transparent hover:border-slate-900">
+            <a href="/products" className="inline-block px-8 py-4 text-slate-900 font-bold transition-all duration-300 hover:bg-slate-900 hover:text-white border-2 border-transparent hover:border-slate-900">
               Explore Products
-            </button>
+            </a>
           </div>
         </div>
       </section>

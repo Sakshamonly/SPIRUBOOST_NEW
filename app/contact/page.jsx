@@ -85,7 +85,7 @@ export default function ContactPage() {
       <Navbar />
       {/* Hero Section with Wave Design */}
       <div
-        className="relative w-full pt-20 pb-10 overflow-hidden"
+        className="relative w-full pt-40 pb-10 overflow-hidden"
         style={{
           background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a52 35%, #1e4d6b 70%, #0f2e3d 100%)',
         }}
@@ -93,13 +93,6 @@ export default function ContactPage() {
         <WaveHero />
 
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Badge */}
-          <div className="inline-block mb-6 px-4 py-2 bg-white/20 rounded-full border border-white/30 backdrop-blur-sm">
-            <span className="text-white text-xs font-semibold tracking-wider uppercase">
-              Write To Us
-            </span>
-          </div>
-
           {/* Main Heading */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
             Get In Touch
@@ -159,7 +152,7 @@ export default function ContactPage() {
                       name="mobile"
                       value={formData.mobile}
                       onChange={handleChange}
-                      placeholder="+1 (555) 000-0000"
+                      placeholder="IND (+91)"
                       className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       required
                     />
@@ -302,24 +295,46 @@ export default function ContactPage() {
                         />
                       </svg>
                     </div>
-                    <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-gray-900">
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-600 mb-1">Email</p>
                       <a
-                        href="mailto:info@spiruboost.com"
-                        className="text-blue-700 hover:text-blue-800 transition-colors"
+                        href="mailto:info@spiruswastha.com"
+                        className="text-sm font-semibold text-gray-900 hover:text-blue-700 transition-colors"
                       >
-                        info@spiruboost.com
-                      </a>
-                      <a
-                        href="tel:+1-800-555-0123"
-                        className="text-blue-700 hover:text-blue-800 transition-colors"
-                      >
-                        +1 (800) 555-0123
+                        info@spiruswastha.com
                       </a>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 mb-4 pt-4 border-t border-gray-200">
                     <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                      <svg
+                        className="w-6 h-6 text-[#1a3a32]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-600 mb-1">Phone</p>
+                      <a
+                        href="tel:+919258888127"
+                        className="text-sm font-semibold text-gray-900 hover:text-blue-700 transition-colors"
+                      >
+                        +91 92588 88127
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4 pt-4 border-t border-gray-200">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
                       <svg
                         className="w-6 h-6 text-[#1a3a32]"
                         fill="none"
@@ -340,9 +355,13 @@ export default function ContactPage() {
                         />
                       </svg>
                     </div>
-                    <div className="text-gray-700 text-sm leading-relaxed w-full">
-                      <p>
-                        123 Farm Lane, Agriculture City, AC 12345
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-600 mb-1">Address</p>
+                      <p className="text-sm font-semibold text-gray-900 leading-relaxed">
+                        2nd Floor, Flat No. A/203,<br />
+                        Dev Prayag Residency, Opp. Shraddhadip Society,<br />
+                        Causeway Singapor Road, Surat,<br />
+                        Gujarat, 395004
                       </p>
                     </div>
                   </div>

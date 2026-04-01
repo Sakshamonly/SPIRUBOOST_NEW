@@ -8,10 +8,19 @@ import Link from "next/link"
 // ============================================================================
 const Header = () => {
   return (
-    <header className="flex justify-center items-center py-6 border-b border-gray-200 mb-8 bg-white">
-      <Link href="/" className="no-underline">
-        <img src="/placeholder.svg?height=40&width=120" alt="Company Logo" className="h-10 w-auto" />
+    <header className="flex items-center justify-between py-6 border-b border-gray-200 mb-8 bg-white px-4 sm:px-6 lg:px-8">
+      <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity duration-300">
+        <svg className="w-6 h-6 text-gray-700 hover:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+        <span className="text-sm font-semibold text-gray-700 hidden sm:inline">Back</span>
       </Link>
+      
+      <Link href="/" className="absolute left-1/2 -translate-x-1/2 no-underline">
+        <img src="/logo.png" alt="Company Logo" className="h-10 w-auto" />
+      </Link>
+      
+      <div className="w-12"></div>
     </header>
   )
 }

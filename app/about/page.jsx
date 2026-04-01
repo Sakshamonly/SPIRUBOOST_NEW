@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import Footer from "../components/usable/footer";
 import Navbar from "../components/usable/navbar";
 
@@ -466,8 +467,8 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {teamMembers.map((member, idx) => (
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {teamMembers.slice(0, 3).map((member, idx) => (
               <div
                 key={idx}
                 className="group relative rounded-2xl overflow-hidden border border-gray-300/40 hover:border-gray-400/70 transition-all duration-300 hover:shadow-lg hover:-translate-y-2"
@@ -534,21 +535,21 @@ export default function AboutPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center flex-wrap">
-            <button className="relative px-10 py-4 font-bold text-lg rounded-full overflow-hidden group transition-all duration-300"
+            <Link href="/products" className="relative px-10 py-4 font-bold text-lg rounded-full overflow-hidden group transition-all duration-300"
               style={{
                 background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
                 color: 'white',
-                boxShadow: '0 12px 35px rgba(220, 38, 38, 0.4)'
+                boxShadow: '0 12px 35px rgba(220, 38, 38, 0.4)',
+                display: 'inline-block'
               }}
               onMouseEnter={(e) => {
-                e.target.style.background = 'linear-gradient(135deg, #000000 0%, #1f2937 100%)';
-                e.target.style.color = '#dc2626';
-                e.target.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.6)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, #000000 0%, #1f2937 100%)';
+                e.currentTarget.style.color = '#dc2626';
+                e.currentTarget.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.6)';
               }}
               onMouseLeave={(e) => {
-                e.target.style.background = 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)';
-                e.target.style.color = 'white';
-                e.target.style.boxShadow = '0 12px 35px rgba(220, 38, 38, 0.4)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)';
+                e.currentTarget.style.color = 'white';
               }}>
               <span className="relative flex items-center gap-2">
                 Explore Products
@@ -556,21 +557,21 @@ export default function AboutPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </span>
-            </button>
+            </Link>
 
-            <button className="relative px-10 py-4 font-bold text-lg rounded-full overflow-hidden group transition-all duration-300"
+            <Link href="/contact" className="relative px-10 py-4 font-bold text-lg rounded-full overflow-hidden group transition-all duration-300"
               style={{
                 background: 'transparent',
                 color: 'white',
                 border: '2px solid #dc2626',
               }}
               onMouseEnter={(e) => {
-                e.target.style.background = 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)';
-                e.target.style.color = '#ffffff';
+                e.currentTarget.style.background = 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)';
+                e.currentTarget.style.color = '#ffffff';
               }}
               onMouseLeave={(e) => {
-                e.target.style.background = 'transparent';
-                e.target.style.color = 'white';
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = 'white';
               }}>
               <span className="relative flex items-center gap-2">
                 Contact Us
@@ -578,7 +579,7 @@ export default function AboutPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </span>
-            </button>
+            </Link>
           </div>
         </div>
       </section>

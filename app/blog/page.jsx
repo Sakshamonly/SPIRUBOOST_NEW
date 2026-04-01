@@ -111,9 +111,7 @@ const BlogPage = () => {
         }}
       >
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
-          <div className="mb-8">
-            <p className="text-xs font-light tracking-widest text-teal-200 uppercase">Welcome to our blog</p>
-          </div>
+          
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-8 leading-tight">
             Stories & <span className="text-teal-300">Insights</span>
           </h1>

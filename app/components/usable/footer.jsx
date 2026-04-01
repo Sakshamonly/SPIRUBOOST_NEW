@@ -7,12 +7,12 @@ export default function Footer() {
     <footer className="bg-linear-to-br from-slate-800 to-slate-900 text-gray-200">
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           
-          {/* Who We Are Section */}
+          {/* Explore Section (Left) */}
           <div>
             <h3 className="text-white text-xl font-bold mb-6 relative inline-block pb-2 border-b-2 border-blue-500">
-              Who We Are
+              Explore
             </h3>
             <ul className="space-y-3 text-sm">
               <li>
@@ -38,40 +38,6 @@ export default function Footer() {
               <li>
                 <a href="#" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
                   FAQs
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Best Seller Section */}
-          <div>
-            <h3 className="text-white text-xl font-bold mb-6 relative inline-block pb-2 border-b-2 border-blue-500">
-              Best Seller
-            </h3>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <a href="/products" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
-                  Spirulina Capsule
-                </a>
-              </li>
-              <li>
-                <a href="/products" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
-                  Shilajit Resin
-                </a>
-              </li>
-              <li>
-                <a href="/products" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
-                  Natural Spirulina Capsules
-                </a>
-              </li>
-              <li>
-                <a href="/products" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
-                  Natural Moringa Leaf Powder
-                </a>
-              </li>
-              <li>
-                <a href="/products" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
-                  Spiruvita Hair Oil
                 </a>
               </li>
             </ul>

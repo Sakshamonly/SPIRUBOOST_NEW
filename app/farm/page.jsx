@@ -83,17 +83,16 @@ export default function OurFarmsPage() {
     <div className="w-full bg-white overflow-hidden">
       <Navbar />
       {/* ============ HERO SECTION ============ */}
-      <section className="relative w-full h-screen flex items-center justify-center overflow-hidden pt-20">
-        {/* Background Image Placeholder */}
-        <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-gray-800 via-gray-900 to-black">
-          <div className="absolute inset-0 bg-cover bg-center" style={{
-            backgroundImage: 'url(/images/hero-farm.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            opacity: 0.3,
-          }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/60 to-black/70" />
-        </div>
+      <section className="relative w-full h-screen flex items-center justify-center overflow-hidden pt-20"
+        style={{
+          background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a52 35%, #1e4d6b 70%, #0f2e3d 100%)'
+        }}>
+        
+        {/* Aurora effect orbs */}
+        <div className="absolute top-20 left-10 w-80 h-80 rounded-full filter blur-3xl opacity-40 animate-pulse"
+          style={{ background: 'radial-gradient(circle, rgba(100, 200, 200, 0.4) 0%, transparent 70%)' }} />
+        <div className="absolute bottom-20 right-10 w-80 h-80 rounded-full filter blur-3xl opacity-30 animate-pulse"
+          style={{ background: 'radial-gradient(circle, rgba(255, 140, 80, 0.3) 0%, transparent 70%)' }} />
 
         {/* Content */}
         <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto animate-fadeInUp">
@@ -320,6 +319,67 @@ export default function OurFarmsPage() {
       )}
 
       {/* ============ ANIMATIONS ============ */}
+      {/* ============ OUR TEAM SECTION ============ */}
+      <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8"
+        style={{
+          background: 'linear-gradient(to bottom, #f8f6f3, #fafaf9)'
+        }}>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl sm:text-6xl font-bold mb-6 text-black"
+              style={{ fontFamily: "'Georgia', serif", fontWeight: '700', letterSpacing: '-1px' }}>
+              Our Team
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto"
+              style={{ fontFamily: "'Segoe UI', sans-serif", fontWeight: '500' }}>
+              Dedicated professionals committed to excellence in cultivation and sustainability
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            {[
+              { name: 'Raj Kumar', designation: 'Farm Manager', initials: 'RK' },
+              { name: 'Priya Singh', designation: 'Operations Lead', initials: 'PS' },
+              { name: 'Amit Patel', designation: 'Quality Officer', initials: 'AP' },
+              { name: 'Neha Sharma', designation: 'Sustainability Lead', initials: 'NS' },
+              { name: 'Vikram Desai', designation: 'Technical Expert', initials: 'VD' }
+            ].map((member, idx) => (
+              <div
+                key={idx}
+                className="group relative rounded-2xl overflow-hidden border border-gray-300/40 hover:border-gray-400/70 transition-all duration-300 hover:shadow-lg hover:-translate-y-2"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(245, 243, 240, 0.8) 100%)',
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.06)'
+                }}>
+                
+                {/* Image Area */}
+                <div className="relative h-48 overflow-hidden bg-linear-to-br from-emerald-100 via-cyan-100 to-blue-100 flex items-center justify-center">
+                  <div className="w-24 h-24 rounded-full flex items-center justify-center text-2xl font-bold text-white group-hover:scale-110 transition-transform"
+                    style={{
+                      background: 'linear-gradient(135deg, #22c55e 0%, #06b6d4 100%)',
+                      boxShadow: '0 12px 30px rgba(34, 197, 94, 0.3)'
+                    }}>
+                    {member.initials}
+                  </div>
+                </div>
+
+                {/* Content Section */}
+                <div className="relative p-4 z-10">
+                  <h3 className="text-base font-bold text-black mb-1"
+                    style={{ fontFamily: "'Georgia', serif" }}>
+                    {member.name}
+                  </h3>
+                  <p className="text-xs font-semibold text-emerald-600">
+                    {member.designation}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <style jsx>{`
         @keyframes fadeIn {
           from {
