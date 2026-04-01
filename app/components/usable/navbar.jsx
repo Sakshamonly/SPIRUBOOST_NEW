@@ -53,7 +53,7 @@ export default function navbar() {
   return (
     <>
       {/* Main Navbar */}
-      <nav className="sticky top-0 z-40 w-full bg-gradient-to-r from-orange-50/70 via-green-50/70 to-orange-100/70 shadow-lg border-b border-orange-100/50 backdrop-blur-md">
+      <nav className="fixed top-0 z-40 w-full bg-gradient-to-r from-orange-50/70 via-green-50/70 to-orange-100/70 shadow-lg border-b border-orange-100/50 backdrop-blur-md">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           {/* Desktop Layout */}
           <div className="hidden md:flex items-center h-20 px-2 relative w-full">

@@ -340,7 +340,7 @@ export default function SpiruboostWellness() {
       <style>{`.smooth-scroll{scroll-behavior:smooth} .text-balance{line-height:1.05}`}</style>
       {/* ===== HERO SECTION - Nature's Blueprint (gradient background) ===== */}
       <section
-        className="relative w-full h-[75vh] md:h-[85vh] lg:h-[95vh] overflow-hidden"
+        className="relative w-full h-[75vh] md:h-[85vh] lg:h-[95vh] overflow-hidden pt-20"
         style={{ background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a52 35%, #1e4d6b 70%, #0f2e3d 100%)' }}
       >
         <div className="relative z-10 max-w-6xl mx-auto h-full flex items-center px-4 sm:px-6 lg:px-8">

@@ -47,7 +47,7 @@ export default function ProductsPage() {
     <>
       <Navbar />
       <section
-        className="relative min-h-[40vh] flex items-center justify-center text-center px-4"
+        className="relative min-h-[40vh] flex items-center justify-center text-center px-4 pt-20"
         style={{ background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a52 35%, #1e4d6b 70%, #0f2e3d 100%)' }}
       >
         <div className="relative z-10 max-w-4xl mx-auto py-20">

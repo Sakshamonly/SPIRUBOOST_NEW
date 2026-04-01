@@ -215,7 +215,7 @@ export default function AuthPage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-linear-to-b from-slate-50 to-white flex">
+      <div className="min-h-screen bg-linear-to-b from-slate-50 to-white flex pt-20">
         {/* Left Side - Form */}
         <div className="w-full lg:w-1/2 flex items-center justify-center px-6 sm:px-8 py-8 sm:py-12">
           <div className="w-full max-w-md">

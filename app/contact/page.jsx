@@ -85,7 +85,7 @@ export default function ContactPage() {
       <Navbar />
       {/* Hero Section with Wave Design */}
       <div
-        className="relative w-full pt-15 pb-10 overflow-hidden"
+        className="relative w-full pt-20 pb-10 overflow-hidden"
         style={{
           background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a52 35%, #1e4d6b 70%, #0f2e3d 100%)',
         }}

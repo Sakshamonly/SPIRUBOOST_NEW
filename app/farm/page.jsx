@@ -83,7 +83,7 @@ export default function OurFarmsPage() {
     <div className="w-full bg-white overflow-hidden">
       <Navbar />
       {/* ============ HERO SECTION ============ */}
-      <section className="relative w-full h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative w-full h-screen flex items-center justify-center overflow-hidden pt-20">
         {/* Background Image Placeholder */}
         <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-gray-800 via-gray-900 to-black">
           <div className="absolute inset-0 bg-cover bg-center" style={{
