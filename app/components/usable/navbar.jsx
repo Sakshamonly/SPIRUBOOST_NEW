@@ -78,7 +78,8 @@ export default function navbar() {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className="text-gray-800 hover:text-gray-950 px-2 py-2 text-sm font-semibold tracking-wide transition-all duration-300 relative group whitespace-nowrap"
+                    className="text-gray-800 hover:text-gray-950 px-2 py-2 text-sm font-bold tracking-wide transition-all duration-300 relative group whitespace-nowrap"
+                    style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif" }}
                   >
                     {link.label}
                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
@@ -214,7 +215,7 @@ export default function navbar() {
             {/* Fixed Header */}
             <div className="shrink-0 p-6 border-b border-orange-200">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Menu</h2>
+                <h2 className="text-2xl sm:text-3xl font-black text-gray-800" style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif" }}>Menu</h2>
                 <button
                   onClick={toggleMenu}
                   className="p-2 hover:bg-orange-200/50 rounded-xl transition-all duration-200"
@@ -234,7 +235,8 @@ export default function navbar() {
                     <Link
                       href={link.href}
                       onClick={toggleMenu}
-                      className="block p-3 text-lg font-semibold text-gray-700 hover:text-gray-900 hover:bg-white/40 rounded-lg transition-all duration-200"
+                      className="block p-3 text-lg font-bold text-gray-700 hover:text-gray-900 hover:bg-white/40 rounded-lg transition-all duration-200"
+                      style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif" }}
                     >
                       {link.label}
                     </Link>

@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Lock, Mail, Phone, User, Leaf } from 'lucide-react';
 import Navbar from '../components/usable/navbar';
 import Footer from '../components/usable/footer';
 
 export default function AuthPage() {
+  const router = useRouter();
   const [mode, setMode] = useState('signin');
   const [signInStep, setSignInStep] = useState('credentials');
   const [signUpStep, setSignUpStep] = useState('details');
@@ -100,8 +102,7 @@ export default function AuthPage() {
     setSignInErrors({});
     setSignInSuccess(true);
     setTimeout(() => {
-      alert(`Sign In Successful!\n\nEmail/Mobile: ${signInEmail}\nRemember Me: ${rememberMe ? 'Yes' : 'No'}`);
-      resetSignIn();
+      router.push('/user');
     }, 1500);
   };
 
@@ -122,8 +123,7 @@ export default function AuthPage() {
     setSignInErrors({});
     setSignInSuccess(true);
     setTimeout(() => {
-      alert(`Sign In Successful!\n\nEmail/Mobile: ${signInEmail}\nRemember Me: ${rememberMe ? 'Yes' : 'No'}`);
-      resetSignIn();
+      router.push('/user');
     }, 1500);
   };
 
@@ -196,8 +196,7 @@ export default function AuthPage() {
     setSignUpErrors({});
     setSignUpSuccess(true);
     setTimeout(() => {
-      alert(`Sign Up Successful!\n\nName: ${signUpName}\nEmail: ${signUpEmail}\nMobile: ${signUpPhone}`);
-      resetSignUp();
+      router.push('/user');
     }, 1500);
   };
 
@@ -226,7 +225,7 @@ export default function AuthPage() {
                 <Leaf className="w-6 h-6 text-white" />
               </div>
               <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
-                Spirulina Lab
+                Spiruboost
               </h1>
             </div>
             <p className="text-gray-500 text-sm sm:text-base font-light italic">

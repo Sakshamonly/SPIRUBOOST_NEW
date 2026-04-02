@@ -1,279 +1,956 @@
-'use client';
+"use client"
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { User, MapPin, ShoppingBag, Package, LogOut, Menu, X } from 'lucide-react';
-import Navbar from '../components/usable/navbar';
-import Footer from '../components/usable/footer';
+import { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
+import { LogOut, Edit, Save, X, User, Mail, Phone, Calendar, MapPin, Home, Building2, Landmark, Hash, Plus, Package, Clock, CheckCircle, Truck, DollarSign, ShoppingBag, Star, Edit3, Trash2 } from "lucide-react"
+import Navbar from "@/app/components/usable/navbar"
+import Footer from "@/app/components/usable/footer"
 
-export default function UserPage() {
-  const [activeTab, setActiveTab] = useState('profile');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+// Add smooth scrolling style
+if (typeof window !== 'undefined') {
+  document.documentElement.style.scrollBehavior = 'smooth'
+}
 
-  // User profile data
-  const userProfile = {
-    name: 'Saksham Pandey',
-    phone: '8433054072',
-    email: 'sakshampandey234@gmail.com',
-    memberStatus: 'Platinum Elite',
-    points: 12450,
-    membershipDate: 'Valid since Jan 2024'
-  };
+export default function UserDashboard() {
+  const router = useRouter()
 
-  // Orders data
-  const orders = [
+  // Mock Data
+  const initialAddresses = [
     {
-      id: 'ORD001',
-      product: 'Spiruboost Capsules',
-      status: 'Delivered',
-      date: 'Oct 14, 2023',
-      price: '₹499.00'
+      id: "addr1",
+      addressLine1: "S1-1512, Socrate 15th Floor",
+      addressLine2: "Supertech Czar Suits",
+      landmark: "Omnicron 1",
+      city: "Greater Noida",
+      state: "Uttar Pradesh",
+      zip: "201310",
     },
     {
-      id: 'ORD002',
-      product: 'Aura Noise Cancelling Suite',
-      status: 'In Transit',
-      date: 'Dec 28, 2023',
-      price: '₹599.00'
-    }
-  ];
-
-  // Saved addresses
-  const addresses = [
-    {
-      label: 'Primary',
-      type: 'Home',
-      address: '123 Main Street, Apt 456, City, State 12345',
-      isDefault: true
+      id: "addr2",
+      addressLine1: "B-502, Bandra Heights",
+      addressLine2: "Linking Road",
+      landmark: "Behind Oberoi Mall",
+      city: "Mumbai",
+      state: "Maharashtra",
+      zip: "400050",
     },
     {
-      label: 'Secondary',
-      type: 'Office',
-      address: 'The Heights Loft, 42 Park Ave, Williamsburg, NY 10211',
-      isDefault: false
-    }
-  ];
+      id: "addr3",
+      addressLine1: "House No. 45, Block C",
+      addressLine2: "Indirapuram, Meerut Road",
+      landmark: "Near DLF Commercial",
+      city: "Ghaziabad",
+      state: "Uttar Pradesh",
+      zip: "201014",
+    },
+  ]
 
-  const TabButton = ({ tabName, label }) => (
-    <button
-      onClick={() => {
-        setActiveTab(tabName);
-        setIsMobileMenuOpen(false);
-      }}
-      className={`px-6 py-3 font-semibold transition-all duration-300 whitespace-nowrap ${
-        activeTab === tabName
-          ? 'text-white bg-gradient-to-r from-emerald-600 to-cyan-600 border-b-2 border-white'
-          : 'text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300'
-      }`}
-    >
-      {label}
-    </button>
-  );
+  const initialUserData = {
+    name: "Priya Sharma",
+    email: "priya.sharma@example.com",
+    mobile: "+91 98765 43210",
+    defaultAddressId: "addr1",
+  }
+
+  const mockOrders = [
+    {
+      id: "ORD001",
+      date: "15-03-2026",
+      items: ["Tulsi Green Tea (2)", "Ayurvedic Turmeric Oil (1)"],
+      status: "Delivered",
+      total: "₹1,250",
+      address: {
+        addressLine1: "Flat 301, Green Park Apartments",
+        addressLine2: "MG Road, Sector 14",
+        landmark: "Near Metro Station",
+        city: "Gurgaon",
+        state: "Haryana",
+        zip: "122001",
+      },
+    },
+    {
+      id: "ORD002",
+      date: "20-02-2026",
+      items: ["Immunity Booster Ashwagandha Capsules (1)"],
+      status: "Shipped",
+      total: "₹599",
+      address: {
+        addressLine1: "B-502, Bandra Heights",
+        addressLine2: "Linking Road",
+        landmark: "Behind Oberoi Mall",
+        city: "Mumbai",
+        state: "Maharashtra",
+        zip: "400050",
+      },
+    },
+    {
+      id: "ORD003",
+      date: "05-02-2026",
+      items: ["Neem & Honey Face Mask (3)", "Brahmi Hair Growth Serum (1)"],
+      status: "Processing",
+      total: "₹899",
+      address: {
+        addressLine1: "House No. 45, Block C",
+        addressLine2: "Indirapuram, Meerut Road",
+        landmark: "Near DLF Commercial",
+        city: "Ghaziabad",
+        state: "Uttar Pradesh",
+        zip: "201014",
+      },
+    },
+  ]
+
+  // State Management
+  const [userData, setUserData] = useState(initialUserData)
+  const [allAddresses, setAllAddresses] = useState(initialAddresses)
+  const [selectedOrder, setSelectedOrder] = useState(null)
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
+  const [editableDetails, setEditableDetails] = useState({
+    name: initialUserData.name,
+  })
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false)
+  const [editingAddress, setEditingAddress] = useState(null)
+  const [addressFormData, setAddressFormData] = useState({
+    addressLine1: "",
+    addressLine2: "",
+    landmark: "",
+    city: "",
+    state: "",
+    zip: "",
+  })
+
+  // Handlers
+  const handleUpdateUserDetails = () => {
+    setUserData((prevData) => ({
+      ...prevData,
+      name: editableDetails.name,
+    }))
+    setIsEditingProfile(false)
+  }
+
+  const handleCancelEditProfile = () => {
+    setEditableDetails({
+      name: userData.name,
+    })
+    setIsEditingProfile(false)
+  }
+
+  const handleAddressChange = (newDefaultId) => {
+    setUserData((prevData) => ({
+      ...prevData,
+      defaultAddressId: newDefaultId,
+    }))
+  }
+
+  const handleOpenAddressModal = (address = null) => {
+    if (address) {
+      setEditingAddress(address)
+      setAddressFormData({
+        addressLine1: address.addressLine1,
+        addressLine2: address.addressLine2,
+        landmark: address.landmark,
+        city: address.city,
+        state: address.state,
+        zip: address.zip,
+      })
+    } else {
+      setEditingAddress(null)
+      setAddressFormData({
+        addressLine1: "",
+        addressLine2: "",
+        landmark: "",
+        city: "",
+        state: "",
+        zip: "",
+      })
+    }
+    setIsAddressModalOpen(true)
+  }
+
+  const handleCloseAddressModal = () => {
+    setIsAddressModalOpen(false)
+    setEditingAddress(null)
+  }
+
+  const handleSaveAddress = () => {
+    if (!addressFormData.addressLine1 || !addressFormData.addressLine2 || !addressFormData.city || !addressFormData.state || !addressFormData.zip) {
+      alert("Please fill in all required fields")
+      return
+    }
+
+    if (editingAddress) {
+      setAllAddresses((prevAddresses) =>
+        prevAddresses.map((addr) =>
+          addr.id === editingAddress.id ? { ...addr, ...addressFormData } : addr
+        )
+      )
+    } else {
+      const newAddress = {
+        id: `addr${Date.now()}`,
+        ...addressFormData,
+      }
+      setAllAddresses((prevAddresses) => [...prevAddresses, newAddress])
+    }
+    handleCloseAddressModal()
+  }
+
+  const handleDeleteAddress = (addressId) => {
+    setAllAddresses((prevAddresses) => prevAddresses.filter((addr) => addr.id !== addressId))
+    if (userData.defaultAddressId === addressId) {
+      setUserData((prevData) => ({
+        ...prevData,
+        defaultAddressId: allAddresses.length > 1 ? allAddresses[0].id : null,
+      }))
+    }
+  }
+
+  const handleOrderClick = (order) => {
+    setSelectedOrder(order)
+    setIsOrderModalOpen(true)
+  }
+
+  const handleCloseOrderModal = () => {
+    setIsOrderModalOpen(false)
+    setSelectedOrder(null)
+  }
+
+  const handleLogout = () => {
+    router.replace("/login")
+  }
+
+  const userDetails = useMemo(() => {
+    const currentDefaultAddress = allAddresses.find((addr) => addr.id === userData.defaultAddressId)
+    const defaultAddressText = currentDefaultAddress
+      ? `${currentDefaultAddress.addressLine1}${currentDefaultAddress.addressLine2 ? `, ${currentDefaultAddress.addressLine2}` : ""}${currentDefaultAddress.landmark ? `, ${currentDefaultAddress.landmark}` : ""}, ${currentDefaultAddress.city}, ${currentDefaultAddress.state} ${currentDefaultAddress.zip}`
+      : "N/A"
+
+    return [
+      { label: "Name", value: userData.name },
+      { label: "Email", value: userData.email },
+      { label: "Mobile", value: userData.mobile },
+      { label: "Default Address", value: defaultAddressText, isSelectable: true },
+    ]
+  }, [userData, allAddresses])
+
+  const defaultAddress = allAddresses.find((addr) => addr.id === userData.defaultAddressId)
+  const otherAddresses = allAddresses.filter((addr) => addr.id !== userData.defaultAddressId)
+
+  const getStatusIcon = (status) => {
+    switch (status.toLowerCase()) {
+      case "delivered":
+        return <CheckCircle className="h-5 w-5 text-green-600" />
+      case "shipped":
+        return <Truck className="h-5 w-5 text-blue-600" />
+      case "processing":
+        return <Clock className="h-5 w-5 text-orange-600" />
+      default:
+        return <Package className="h-5 w-5 text-gray-600" />
+    }
+  }
+
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case "delivered":
+        return "text-green-700 bg-green-100 border-green-200"
+      case "shipped":
+        return "text-blue-700 bg-blue-100 border-blue-200"
+      case "processing":
+        return "text-orange-700 bg-orange-100 border-orange-200"
+      default:
+        return "text-gray-700 bg-gray-100 border-gray-200"
+    }
+  }
+
+  const getCardGradient = (status) => {
+    switch (status.toLowerCase()) {
+      case "delivered":
+        return "from-green-50 to-emerald-50 border-green-200"
+      case "shipped":
+        return "from-blue-50 to-sky-50 border-blue-200"
+      case "processing":
+        return "from-orange-50 to-yellow-50 border-orange-200"
+      default:
+        return "from-gray-50 to-slate-50 border-gray-200"
+    }
+  }
+
+  const getIcon = (label) => {
+    switch (label) {
+      case "Name":
+        return <User className="h-5 w-5 text-purple-600" />
+      case "Email":
+        return <Mail className="h-5 w-5 text-blue-600" />
+      case "Mobile":
+        return <Phone className="h-5 w-5 text-green-600" />
+      case "Default Address":
+        return <MapPin className="h-5 w-5 text-orange-600" />
+      default:
+        return <User className="h-5 w-5 text-gray-600" />
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white text-gray-800" style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif", scrollBehavior: 'smooth' }}>
       <Navbar />
 
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-emerald-600 to-cyan-600 text-white pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
-            {/* Profile Avatar */}
-            <div className="relative">
-              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-white/20 flex items-center justify-center border-4 border-white shadow-lg">
-                <User className="w-12 h-12 sm:w-16 sm:h-16 text-white" />
-              </div>
-            </div>
-
-            {/* Profile Info */}
-            <div className="flex-1 text-center sm:text-left">
-              <h1 className="text-3xl sm:text-4xl font-bold mb-2">{userProfile.name}</h1>
-              <p className="text-emerald-100 mb-4">{userProfile.email}</p>
-              <div className="inline-block bg-white/20 px-4 py-2 rounded-full">
-                <p className="text-sm font-semibold">{userProfile.memberStatus}</p>
-              </div>
-            </div>
-
-            {/* Membership Status Card */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 text-center w-full sm:w-auto">
-              <p className="text-white/80 text-sm mb-2">Loyalty Points</p>
-              <p className="text-4xl font-bold mb-2">{userProfile.points.toLocaleString()}</p>
-              <p className="text-white/60 text-xs">{userProfile.membershipDate}</p>
-            </div>
+      <div className="text-white py-12 md:py-16 mt-20 transition-all duration-500" style={{ background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a52 35%, #1e4d6b 70%, #0f2e3d 100%)' }}>
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-2" style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif", fontWeight: '700' }}>
+              Welcome {userData.name}
+            </h1>
+            <p className="text-gray-200 text-lg">
+              Know about youself, your orders and manage your delivery addresses all in one place.
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          {/* Tab Navigation - Mobile Hamburger */}
-          <div className="md:hidden px-4 py-4 border-b border-gray-200">
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="flex items-center gap-2 text-gray-700 font-semibold"
-            >
-              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              Menu
-            </button>
-
-            {isMobileMenuOpen && (
-              <div className="mt-4 flex flex-col gap-2">
-                <TabButton tabName="profile" label="Profile" />
-                <TabButton tabName="orders" label="Orders" />
-                <TabButton tabName="addresses" label="Saved Addresses" />
-              </div>
-            )}
-          </div>
-
-          {/* Tab Navigation - Desktop */}
-          <div className="hidden md:flex border-b border-gray-200 bg-white">
-            <TabButton tabName="profile" label="Profile Settings" />
-            <TabButton tabName="orders" label="Order History" />
-            <TabButton tabName="addresses" label="Saved Addresses" />
-          </div>
-
-          {/* Tab Content */}
-          <div className="px-4 sm:px-6 lg:px-8 py-8">
-            {/* Profile Tab */}
-            {activeTab === 'profile' && (
-              <div className="max-w-2xl">
-                <h2 className="text-2xl font-bold text-gray-900 mb-8">Profile Information</h2>
-
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
-                  {/* Profile Fields */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
-                      <div className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                        {userProfile.name}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                      <div className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                        {userProfile.email}
-                      </div>
-                    </div>
+      <main className="container mx-auto max-w-6xl py-8 md:py-12 px-4 space-y-8">
+        {/* Dashboard Cards Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+          {/* User Details Section */}
+          <section className="w-full bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300">
+            {/* Header */}
+            <div className="px-6 md:px-8 py-5 border-b border-gray-100" style={{ background: '#f8f9fa' }}>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: '#e3f2fd' }}>
+                    <User className="h-5 w-5" style={{ color: '#1976d2' }} />
                   </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                        Mobile Number
-                      </label>
-                      <div className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                        +91 {userProfile.phone}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Membership Status</label>
-                      <div className="px-4 py-3 bg-emerald-50 border border-emerald-300 rounded-lg text-emerald-900 font-semibold">
-                        {userProfile.memberStatus}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-4 pt-4">
-                    <button className="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-all duration-300">
-                      Edit Profile
-                    </button>
-                    <button className="flex items-center gap-2 px-6 py-2 bg-red-100 hover:bg-red-200 text-red-700 font-semibold rounded-lg transition-all duration-300">
-                      <LogOut className="w-4 h-4" />
-                      Logout
-                    </button>
-                  </div>
+                  <h2 className="text-xl font-bold" style={{ fontFamily: "'Segoe UI', sans-serif", fontWeight: '700', color: '#000000' }}>Profile Details</h2>
                 </div>
-              </div>
-            )}
-
-            {/* Orders Tab */}
-            {activeTab === 'orders' && (
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-8">Order History</h2>
-
-                <div className="space-y-4">
-                  {orders.map((order) => (
-                    <div key={order.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-300">
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">{order.product}</h3>
-                          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                            <div>Order ID: <span className="font-semibold text-gray-900">{order.id}</span></div>
-                            <div>Date: <span className="font-semibold text-gray-900">{order.date}</span></div>
-                          </div>
-                        </div>
-                        <div className="flex flex-col sm:items-end gap-2 w-full sm:w-auto">
-                          <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                            order.status === 'Delivered' 
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-yellow-100 text-yellow-700'
-                          }`}>
-                            {order.status}
-                          </div>
-                          <div className="text-lg font-bold text-gray-900">{order.price}</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Addresses Tab */}
-            {activeTab === 'addresses' && (
-              <div>
-                <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900">Saved Addresses</h2>
-                  <button className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-all duration-300">
-                    + Add Address
+                {!isEditingProfile ? (
+                  <button
+                    onClick={() => setIsEditingProfile(true)}
+                    className="px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all duration-300 hover:shadow-sm hover:bg-blue-50"
+                    style={{ color: '#1976d2' }}
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit
                   </button>
-                </div>
+                ) : (
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={handleUpdateUserDetails}
+                      className="px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all duration-300 hover:shadow-md"
+                      style={{ color: '#388e3c', background: '#e8f5e9' }}
+                      onMouseEnter={(e) => {
+                        e.target.style.background = '#c8e6c9'
+                        e.target.style.transform = 'translateY(-1px)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.background = '#e8f5e9'
+                        e.target.style.transform = 'translateY(0)'
+                      }}
+                    >
+                      <Save className="h-4 w-4" />
+                      Save
+                    </button>
+                    <button
+                      onClick={handleCancelEditProfile}
+                      className="px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-1 transition-all duration-300 hover:bg-gray-100 hover:shadow-sm"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
 
-                <div className="space-y-4">
-                  {addresses.map((addr, idx) => (
-                    <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-300">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-start gap-3">
-                          <MapPin className="w-5 h-5 text-emerald-600 mt-1 flex-shrink-0" />
-                          <div>
-                            <h3 className="font-semibold text-gray-900">{addr.label} - {addr.type}</h3>
-                            <p className="text-gray-600 text-sm mt-1">{addr.address}</p>
-                          </div>
-                        </div>
-                        {addr.isDefault && (
-                          <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
-                            Default
+            {/* Content */}
+            <div className="p-6 md:p-8 space-y-4">
+              {userDetails.map((detail, index) => (
+                <div key={index} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all duration-300 border border-gray-100 hover:border-gray-200 hover:shadow-sm">
+                  <div className="shrink-0">
+                    {getIcon(detail.label)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <label className="text-sm font-medium text-gray-600 block mb-1" style={{ fontFamily: "'Segoe UI', sans-serif" }}>
+                      {detail.label}
+                    </label>
+                    {isEditingProfile && detail.label === "Name" ? (
+                      <input
+                        type="text"
+                        value={editableDetails.name}
+                        onChange={(e) => setEditableDetails({ ...editableDetails, name: e.target.value })}
+                        className="w-full text-sm text-gray-900 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-md px-3 py-2 outline-none transition-all"
+                        placeholder="Enter your name"
+                      />
+                    ) : detail.label === "Default Address" && isEditingProfile ? (
+                      <select
+                        value={userData.defaultAddressId || ""}
+                        onChange={(e) => handleAddressChange(e.target.value)}
+                        className="w-full text-sm text-gray-900 border border-gray-300 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 rounded-md px-3 py-2 outline-none transition-all bg-white cursor-pointer"
+                      >
+                        <option value="">Select a default address</option>
+                        {allAddresses.map((addr) => (
+                          <option key={addr.id} value={addr.id}>
+                            {addr.addressLine1} {addr.addressLine2 ? `, ${addr.addressLine2}` : ""}, {addr.city}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="text-sm text-gray-900 font-medium">
+                        {detail.value}
+                        {(detail.label === "Email" || detail.label === "Mobile") && isEditingProfile && (
+                          <span className="text-xs text-gray-500 block mt-1">
+                            This field cannot be edited here
                           </span>
                         )}
                       </div>
-                      <div className="flex gap-3">
-                        <button className="text-emerald-600 hover:text-emerald-700 font-semibold text-sm">
-                          Edit
-                        </button>
-                        {!addr.isDefault && (
-                          <>
-                            <span className="text-gray-300">•</span>
-                            <button className="text-red-600 hover:text-red-700 font-semibold text-sm">
-                              Delete
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 md:px-8 py-6 bg-white border-t border-gray-100">
+              <button
+                onClick={handleLogout}
+                className="w-full px-6 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center justify-center gap-2 hover:shadow-lg active:scale-95"
+                style={{ 
+                  color: '#ffffff', 
+                  background: '#d32f2f',
+                  fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif",
+                  fontSize: '15px',
+                  letterSpacing: '0.3px'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#000000'
+                  e.target.style.transform = 'translateY(-2px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = '#d32f2f'
+                  e.target.style.transform = 'translateY(0)'
+                }}
+              >
+                <LogOut className="h-5 w-5" />
+                Sign Out
+              </button>
+            </div>
+          </section>
+
+          {/* Saved Addresses Section */}
+          <section className="w-full bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300">
+            {/* Header */}
+            <div className="px-6 md:px-8 py-5 border-b border-gray-100" style={{ background: '#f8f9fa' }}>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: '#e3f2fd' }}>
+                    <Home className="h-5 w-5" style={{ color: '#1976d2' }} />
+                  </div>
+                  <h2 className="text-xl font-bold" style={{ fontFamily: "'Segoe UI', sans-serif", fontWeight: '700', color: '#000000' }}>Delivery Addresses</h2>
+                </div>
+                <button
+                  onClick={() => handleOpenAddressModal()}
+                  className="px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all duration-300 text-white hover:shadow-md"
+                  style={{ background: '#0288d1' }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = '#01579b'
+                    e.target.style.transform = 'translateY(-2px)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = '#0288d1'
+                    e.target.style.transform = 'translateY(0)'
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                  Add New
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 md:p-8">
+              {allAddresses.length === 0 ? (
+                <div className="text-center py-8">
+                  <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500 mb-4">No addresses saved yet</p>
+                  <button
+                    onClick={() => handleOpenAddressModal()}
+                    className="px-6 py-2 rounded-lg text-white font-medium transition-all"
+                    style={{ background: '#0288d1' }}
+                    onMouseEnter={(e) => e.target.style.background = '#01579b'}
+                    onMouseLeave={(e) => e.target.style.background = '#0288d1'}
+                  >
+                    <Plus className="h-4 w-4 inline mr-2" />
+                    Add Your First Address
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {defaultAddress && (
+                    <div className="space-y-2">
+                      <h3 className="text-sm font-semibold text-gray-700 flex items-center">
+                        <Home className="h-4 w-4 mr-2" style={{ color: '#388e3c' }} />
+                        Default Address
+                      </h3>
+                      <div className="relative group p-5 rounded-lg border border-gray-200 bg-gray-50 hover:bg-white transition-all duration-300">
+                        {defaultAddress && (
+                          <div className="absolute -top-2 -right-2 text-xs font-bold px-3 py-1 rounded-full text-white flex items-center" style={{ background: '#388e3c' }}>
+                            <Star className="h-3 w-3 mr-1" />
+                            Default
+                          </div>
+                        )}
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start space-x-3 flex-1">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2 mb-2">
+                                <MapPin className="h-4 w-4" style={{ color: '#1976d2' }} />
+                                <span className="font-semibold text-gray-900">
+                                  {defaultAddress.addressLine1}
+                                </span>
+                              </div>
+                              <div className="text-sm text-gray-600 space-y-1 ml-6">
+                                {defaultAddress.addressLine2 && (
+                                  <p>{defaultAddress.addressLine2}</p>
+                                )}
+                                {defaultAddress.landmark && (
+                                  <p className="font-medium">📍 {defaultAddress.landmark}</p>
+                                )}
+                                <p className="font-medium text-gray-700">
+                                  {defaultAddress.city}, {defaultAddress.state} {defaultAddress.zip}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex space-x-2 ml-4">
+                            <button
+                              onClick={() => handleOpenAddressModal(defaultAddress)}
+                              className="h-8 w-8 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                              style={{ color: '#1976d2', background: '#e3f2fd' }}
+                            >
+                              <Edit3 className="h-4 w-4" />
                             </button>
-                          </>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {otherAddresses.length > 0 && (
+                    <div className="space-y-2">
+                      <h3 className="text-sm font-semibold text-gray-700 flex items-center">
+                        <MapPin className="h-4 w-4 mr-2" style={{ color: '#1976d2' }} />
+                        Other Addresses
+                      </h3>
+                      <div className="space-y-3">
+                        {otherAddresses.map((address) => (
+                          <div key={address.id} className="relative group p-5 rounded-lg border border-gray-200 bg-gray-50 hover:bg-white transition-all duration-300 hover:shadow-md hover:border-gray-300">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-start space-x-3 flex-1">
+                                <div className="flex-1">
+                                  <div className="flex items-center space-x-2 mb-2">
+                                    <MapPin className="h-4 w-4" style={{ color: '#1976d2' }} />
+                                    <span className="font-semibold text-gray-900">
+                                      {address.addressLine1}
+                                    </span>
+                                  </div>
+                                  <div className="text-sm text-gray-600 space-y-1 ml-6">
+                                    {address.addressLine2 && (
+                                      <p>{address.addressLine2}</p>
+                                    )}
+                                    {address.landmark && (
+                                      <p className="font-medium">📍 {address.landmark}</p>
+                                    )}
+                                    <p className="font-medium text-gray-700">
+                                      {address.city}, {address.state} {address.zip}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex space-x-2 ml-4">
+                                <button
+                                  onClick={() => handleOpenAddressModal(address)}
+                                  className="h-8 w-8 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:shadow-sm"
+                                  style={{ color: '#1976d2', background: '#e3f2fd' }}
+                                  onMouseEnter={(e) => e.target.style.transform = 'scale(1.1)'}
+                                  onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                                >
+                                  <Edit3 className="h-4 w-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteAddress(address.id)}
+                                  className="h-8 w-8 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:shadow-sm"
+                                  style={{ color: '#d32f2f', background: '#ffebee' }}
+                                  onMouseEnter={(e) => e.target.style.transform = 'scale(1.1)'}
+                                  onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+
+        {/* Orders Section */}
+        <section className="w-full bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300">
+          {/* Header */}
+          <div className="px-6 md:px-8 py-5 border-b border-gray-100" style={{ background: '#f8f9fa' }}>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: '#fff3e0' }}>
+                <Package className="h-5 w-5" style={{ color: '#f57c00' }} />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold" style={{ fontFamily: "'Segoe UI', sans-serif", fontWeight: '700', color: '#000000' }}>Your Orders</h2>
+                <p className="text-sm text-gray-600">{mockOrders.length} orders found</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 md:p-8">
+            {mockOrders.length === 0 ? (
+              <div className="text-center py-12">
+                <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 text-lg mb-2">No orders yet</p>
+                <p className="text-gray-400">Start shopping to see your orders here</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {mockOrders.map((order) => (
+                  <div
+                    key={order.id}
+                    className="group relative cursor-pointer rounded-lg border border-gray-200 p-5 bg-white hover:shadow-lg hover:border-gray-300 transition-all duration-300 hover:-translate-y-1"
+                    onClick={() => handleOrderClick(order)}
+                  >
+                    {/* Order Header */}
+                    <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
+                      <div className="flex items-center space-x-2">
+                        {getStatusIcon(order.status)}
+                        <span className="font-bold text-gray-900">#{order.id}</span>
+                      </div>
+                      <div className={`px-3 py-1 rounded-full text-xs font-semibold border`} style={{
+                        background: order.status === 'Delivered' ? '#e8f5e9' : order.status === 'Shipped' ? '#e3f2fd' : '#fff3e0',
+                        color: order.status === 'Delivered' ? '#388e3c' : order.status === 'Shipped' ? '#1976d2' : '#f57c00',
+                        borderColor: order.status === 'Delivered' ? '#c8e6c9' : order.status === 'Shipped' ? '#bbdefb' : '#ffe0b2'
+                      }}>
+                        {order.status}
+                      </div>
+                    </div>
+
+                    {/* Order Details */}
+                    <div className="space-y-3 mb-4">
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <Calendar className="h-4 w-4" />
+                        <span>{order.date}</span>
+                      </div>
+
+                      <div className="flex items-start space-x-2 text-sm text-gray-600">
+                        <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
+                        <span className="line-clamp-2">
+                          {order.address.addressLine1}, {order.address.city}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Items */}
+                    <div className="mb-4">
+                      <p className="text-sm font-medium text-gray-700 mb-2">Items:</p>
+                      <div className="space-y-1">
+                        {order.items.slice(0, 2).map((item, index) => (
+                          <p key={index} className="text-sm text-gray-600 px-2 py-1 rounded">
+                            • {item}
+                          </p>
+                        ))}
+                        {order.items.length > 2 && (
+                          <p className="text-sm text-gray-500 italic">
+                            +{order.items.length - 2} more items
+                          </p>
                         )}
                       </div>
+                    </div>
+
+                    {/* Total */}
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <span className="text-sm font-medium text-gray-600">Total</span>
+                      <div className="flex items-center space-x-1">
+                        
+                        <span className="text-lg font-bold text-gray-900">{order.total.replace("$", "")}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
+
+      {/* Order Details Modal */}
+      {isOrderModalOpen && selectedOrder && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden w-full max-w-lg">
+            {/* Header */}
+            <div className="px-6 md:px-8 py-5 border-b border-gray-100 bg-white">
+              <div className="flex items-center space-x-3 mb-2">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: '#fff3e0' }}>
+                  <Package className="h-5 w-5" style={{ color: '#f57c00' }} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold" style={{ color: '#000000' }}>Order #{selectedOrder.id}</h2>
+                  <p className="text-sm text-gray-600">Complete order information and status</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 md:p-8 space-y-6 max-h-96 overflow-y-auto">
+              {/* Status Section */}
+              <div className="flex items-center justify-between p-4 rounded-lg border border-gray-200 bg-white">
+                <div className="flex items-center space-x-3">
+                  <Calendar className="h-5 w-5 text-gray-600" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Order Date</p>
+                    <p className="text-gray-900 font-semibold">{selectedOrder.date}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {getStatusIcon(selectedOrder.status)}
+                  <span className="px-3 py-1 rounded-full text-sm font-semibold" style={{
+                    background: selectedOrder.status === 'Delivered' ? '#e8f5e9' : selectedOrder.status === 'Shipped' ? '#e3f2fd' : '#fff3e0',
+                    color: selectedOrder.status === 'Delivered' ? '#388e3c' : selectedOrder.status === 'Shipped' ? '#1976d2' : '#f57c00',
+                    border: selectedOrder.status === 'Delivered' ? '1px solid #c8e6c9' : selectedOrder.status === 'Shipped' ? '1px solid #bbdefb' : '1px solid #ffe0b2'
+                  }}>
+                    {selectedOrder.status}
+                  </span>
+                </div>
+              </div>
+
+              {/* Items Section */}
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <ShoppingBag className="h-5 w-5" style={{ color: '#1976d2' }} />
+                  <h3 className="font-semibold text-gray-900">Order Items</h3>
+                </div>
+                <div className="space-y-2">
+                  {selectedOrder.items.map((item, index) => (
+                    <div key={index} className="flex items-center p-3 rounded-lg border border-gray-200 bg-white">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ background: '#e3f2fd' }}>
+                        <Package className="h-4 w-4" style={{ color: '#1976d2' }} />
+                      </div>
+                      <span className="text-gray-800 font-medium text-sm">{item}</span>
                     </div>
                   ))}
                 </div>
               </div>
-            )}
+
+              <div style={{ height: '1px', background: '#e0e0e0' }} />
+
+              {/* Shipping Address Section */}
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <MapPin className="h-5 w-5" style={{ color: '#388e3c' }} />
+                  <h3 className="font-semibold text-gray-900">Delivery Address</h3>
+                </div>
+                <div className="p-4 rounded-lg border border-gray-200 bg-white">
+                  <p className="text-gray-800 leading-relaxed text-sm">
+                    {selectedOrder.address.addressLine1}
+                    {selectedOrder.address.addressLine2 ? `, ${selectedOrder.address.addressLine2}` : ""}
+                    {selectedOrder.address.landmark ? `, ${selectedOrder.address.landmark}` : ""}, {selectedOrder.address.city}, {selectedOrder.address.state} {selectedOrder.address.zip}
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ height: '1px', background: '#e0e0e0' }} />
+
+              {/* Total Section */}
+              <div className="flex items-center justify-between p-4 rounded-lg border border-gray-200 bg-white">
+                <div className="flex items-center space-x-2">
+                  <DollarSign className="h-5 w-5" style={{ color: '#388e3c' }} />
+                  <span className="font-semibold text-gray-700">Order Total</span>
+                </div>
+                <span className="text-2xl font-bold" style={{ color: '#388e3c' }}>{selectedOrder.total}</span>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 md:px-8 py-4 border-t border-gray-100 flex justify-end bg-white">
+              <button
+                onClick={handleCloseOrderModal}
+                className="px-6 py-2 text-white font-medium rounded-lg transition-all duration-300 flex items-center gap-2 hover:shadow-md"
+                style={{ background: '#0288d1' }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#01579b'
+                  e.target.style.transform = 'translateY(-2px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = '#0288d1'
+                  e.target.style.transform = 'translateY(0)'
+                }}
+              >
+                <X className="h-4 w-4" />
+                Close
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
+      {/* Address Form Modal */}
+      {isAddressModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white w-full max-w-lg p-0 rounded-2xl shadow-lg border border-gray-200 overflow-hidden m-auto">
+            {/* Header */}
+            <div className="px-6 md:px-8 py-5 border-b border-gray-100 bg-white">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: '#e3f2fd' }}>
+                  <MapPin className="h-5 w-5" style={{ color: '#1976d2' }} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold" style={{ color: '#000000' }}>
+                    {editingAddress ? "Edit Address" : "Add New Address"}
+                  </h2>
+                  <p className="text-sm text-gray-600">
+                    {editingAddress ? "Update your delivery address" : "Add a new delivery location"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Form */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                handleSaveAddress()
+              }}
+              className="p-6 md:p-8 space-y-5 max-h-96 overflow-y-auto"
+            >
+              {/* Address Line 1 */}
+              <div className="space-y-2">
+                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700">
+                  <Home className="h-4 w-4" style={{ color: '#1976d2' }} />
+                  <span>House/Building Number *</span>
+                </label>
+                <input
+                  placeholder="e.g., 123, Green Apartments, Block A"
+                  value={addressFormData.addressLine1}
+                  onChange={(e) => setAddressFormData({ ...addressFormData, addressLine1: e.target.value })}
+                  className="w-full border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg p-3 text-sm outline-none transition-all"
+                  required
+                />
+              </div>
+
+              {/* Address Line 2 */}
+              <div className="space-y-2">
+                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700">
+                  <Building2 className="h-4 w-4" style={{ color: '#388e3c' }} />
+                  <span>Street/Area *</span>
+                </label>
+                <input
+                  placeholder="e.g., MG Road, Sector 14"
+                  value={addressFormData.addressLine2}
+                  onChange={(e) => setAddressFormData({ ...addressFormData, addressLine2: e.target.value })}
+                  className="w-full border border-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-500 rounded-lg p-3 text-sm outline-none transition-all"
+                  required
+                />
+              </div>
+
+              {/* Landmark */}
+              <div className="space-y-2">
+                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700">
+                  <Landmark className="h-4 w-4" style={{ color: '#f57c00' }} />
+                  <span>Landmark (Optional)</span>
+                </label>
+                <input
+                  placeholder="e.g., Near Metro Station, Behind Mall"
+                  value={addressFormData.landmark}
+                  onChange={(e) => setAddressFormData({ ...addressFormData, landmark: e.target.value })}
+                  className="w-full border border-gray-300 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 rounded-lg p-3 text-sm outline-none transition-all"
+                />
+              </div>
+
+              {/* City and State */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700">
+                    <MapPin className="h-4 w-4" style={{ color: '#1976d2' }} />
+                    <span>City *</span>
+                  </label>
+                  <input
+                    placeholder="e.g., New Delhi"
+                    value={addressFormData.city}
+                    onChange={(e) => setAddressFormData({ ...addressFormData, city: e.target.value })}
+                    className="w-full border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg p-3 text-sm outline-none transition-all"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700">
+                    <MapPin className="h-4 w-4" style={{ color: '#d32f2f' }} />
+                    <span>State *</span>
+                  </label>
+                  <input
+                    placeholder="e.g., Delhi"
+                    value={addressFormData.state}
+                    onChange={(e) => setAddressFormData({ ...addressFormData, state: e.target.value })}
+                    className="w-full border border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-lg p-3 text-sm outline-none transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* ZIP Code */}
+              <div className="space-y-2">
+                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700">
+                  <Hash className="h-4 w-4" style={{ color: '#7b1fa2' }} />
+                  <span>PIN Code *</span>
+                </label>
+                <input
+                  placeholder="e.g., 110001"
+                  value={addressFormData.zip}
+                  onChange={(e) => setAddressFormData({ ...addressFormData, zip: e.target.value })}
+                  className="w-full border border-gray-300 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 rounded-lg p-3 text-sm outline-none transition-all"
+                  required
+                />
+              </div>
+
+              {/* Footer Buttons */}
+              <div className="flex justify-end space-x-3 pt-6 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={handleCloseAddressModal}
+                  className="px-6 py-2 text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2 transition-all duration-300 font-medium hover:shadow-sm"
+                >
+                  <X className="h-4 w-4" />
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 text-white rounded-lg shadow-sm flex items-center gap-2 transition-all duration-300 font-medium hover:shadow-md"
+                  style={{ background: '#0288d1' }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = '#01579b'
+                    e.target.style.transform = 'translateY(-2px)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = '#0288d1'
+                    e.target.style.transform = 'translateY(0)'
+                  }}
+                >
+                  <Save className="h-4 w-4" />
+                  {editingAddress ? "Save Changes" : "Add Address"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
       <Footer />
     </div>
-  );
+  )
 }
