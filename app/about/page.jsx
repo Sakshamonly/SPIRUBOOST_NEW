@@ -418,34 +418,36 @@ export default function AboutPage() {
           </div>
 
           <div className="flex justify-center">
-            <button className="relative px-10 py-4 font-bold text-lg rounded-full overflow-hidden group transition-all duration-300"
-              style={{
-                background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
-                color: 'white',
-                boxShadow: '0 12px 35px rgba(220, 38, 38, 0.35)'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background = 'linear-gradient(135deg, #000000 0%, #1f2937 100%)';
-                e.target.style.color = '#dc2626';
-                e.target.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.6)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)';
-                e.target.style.color = 'white';
-                e.target.style.boxShadow = '0 12px 35px rgba(220, 38, 38, 0.35)';
-              }}>
-              <span className="relative flex items-center gap-2">
-                Explore Our Farms
-                <svg
-                  className="w-5 h-5 group-hover:translate-x-1 transition-transform"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
-            </button>
+            <Link href="/farm">
+              <button className="relative px-10 py-4 font-bold text-lg rounded-full overflow-hidden group transition-all duration-300"
+                style={{
+                  background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
+                  color: 'white',
+                  boxShadow: '0 12px 35px rgba(220, 38, 38, 0.35)'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = 'linear-gradient(135deg, #000000 0%, #1f2937 100%)';
+                  e.target.style.color = '#dc2626';
+                  e.target.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.6)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)';
+                  e.target.style.color = 'white';
+                  e.target.style.boxShadow = '0 12px 35px rgba(220, 38, 38, 0.35)';
+                }}>
+                <span className="relative flex items-center gap-2">
+                  Explore Our Farms
+                  <svg
+                    className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </span>
+              </button>
+            </Link>
           </div>
         </div>
       </section>

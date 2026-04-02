@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Search, ShoppingCart, Heart, Package, User, X } from "lucide-react"
 import CartSidebar from "./cart"
 import SearchOverlay from "./search"
@@ -21,31 +22,65 @@ const HamburgerIcon = ({ isOpen }) => (
 )
 
 export default function navbar() {
+  const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [isWishlistOpen, setIsWishlistOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [redirectAfterLogin, setRedirectAfterLogin] = useState(null)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
   const toggleCart = () => setIsCartOpen(!isCartOpen)
   const toggleWishlist = () => setIsWishlistOpen(!isWishlistOpen)
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen)
+  const toggleAccountDropdown = () => setIsAccountDropdownOpen(!isAccountDropdownOpen)
+  
+  const handleSignOut = () => {
+    setIsAccountDropdownOpen(false)
+    setIsLoggedIn(false)
+    setRedirectAfterLogin(null)
+    router.push('/')
+  }
+
+  const handleMyProfile = () => {
+    if (!isLoggedIn) {
+      setRedirectAfterLogin('/user')
+      sessionStorage.setItem('redirectAfterLogin', '/user')
+      router.push('/login')
+    } else {
+      setIsAccountDropdownOpen(false)
+      router.push('/user')
+    }
+  }
+
+  const handleMyOrders = () => {
+    if (!isLoggedIn) {
+      setRedirectAfterLogin('/orders')
+      sessionStorage.setItem('redirectAfterLogin', '/orders')
+      router.push('/login')
+    } else {
+      setIsAccountDropdownOpen(false)
+      router.push('/orders')
+    }
+  }
 
   const navLinks = [
-    { label: "Wellness", href: "/wellness" },
+    { label: "About", href: "/about" },
     { label: "Products", href: "/products" },
+    { label: "Wellness", href: "/wellness" },
     { label: "Blog", href: "/blog" },
     { label: "Farms", href: "/farm" },
-    { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
   ]
 
   const mobileNavLinks = [
-    { label: "Wellness", href: "/wellness" },
+    { label: "About", href: "/about" },
     { label: "Products", href: "/products" },
+    { label: "Wellness", href: "/wellness" },
     { label: "Blog", href: "/blog" },
     { label: "Farms", href: "/farm" },
-    { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
     { label: "Account", href: "/login" },
   ]
@@ -104,13 +139,44 @@ export default function navbar() {
               >
                 <ShoppingCart className="h-5 w-5 stroke-2" />
               </button>
-              <Link
-                href="/login"
-                className="p-3 text-gray-700 hover:text-gray-900 transition-all duration-300 hover:scale-110"
-                aria-label="Login"
-              >
-                <User className="h-5 w-5 stroke-2" />
-              </Link>
+              <div className="relative">
+                <button
+                  onClick={toggleAccountDropdown}
+                  className="p-3 text-gray-700 hover:text-gray-900 transition-all duration-300 hover:scale-110"
+                  aria-label="Account"
+                >
+                  <User className="h-5 w-5 stroke-2" />
+                </button>
+                
+                {/* Account Dropdown Menu */}
+                {isAccountDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 py-1 z-50 backdrop-blur-sm"
+                    style={{ boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)' }}
+                  >
+                    <button
+                      onClick={handleMyProfile}
+                      className="w-full text-left block px-5 py-3 text-gray-800 hover:bg-gray-50 transition-all duration-200 text-sm font-semibold rounded-lg mx-1"
+                      style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif", background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      👤 My Profile
+                    </button>
+                    <button
+                      onClick={handleMyOrders}
+                      className="w-full text-left block px-5 py-3 text-gray-800 hover:bg-gray-50 transition-all duration-200 text-sm font-semibold rounded-lg mx-1"
+                      style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif", background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      📦 My Orders
+                    </button>
+                    <button
+                      className="w-5/6 mx-1 block px-5 py-3 text-gray-800 hover:bg-gray-50 transition-all duration-200 text-sm font-semibold rounded-lg"
+                      style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif", background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', width: '100%' }}
+                      onClick={handleSignOut}
+                    >
+                      🚪 Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -230,19 +296,59 @@ export default function navbar() {
             <div className="flex-1 overflow-y-auto p-6">
               {/* Navigation Links */}
               <div className="space-y-2">
-                {mobileNavLinks.map((link, index) => (
-                  <div key={link.label}>
-                    <Link
-                      href={link.href}
-                      onClick={toggleMenu}
-                      className="block p-3 text-lg font-bold text-gray-700 hover:text-gray-900 hover:bg-white/40 rounded-lg transition-all duration-200"
-                      style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif" }}
-                    >
-                      {link.label}
-                    </Link>
-                    {index < mobileNavLinks.length - 1 && <div className="w-full h-px bg-orange-200/50 my-2"></div>}
-                  </div>
-                ))}
+                {mobileNavLinks.map((link, index) => {
+                  // Skip the Account link, we'll add it separately
+                  if (link.label === "Account") return null
+                  
+                  return (
+                    <div key={link.label}>
+                      <Link
+                        href={link.href}
+                        onClick={toggleMenu}
+                        className="block p-3 text-lg font-bold text-gray-700 hover:text-gray-900 hover:bg-white/40 rounded-lg transition-all duration-200"
+                        style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif" }}
+                      >
+                        {link.label}
+                      </Link>
+                      {index < mobileNavLinks.length - 2 && <div className="w-full h-px bg-orange-200/50 my-2"></div>}
+                    </div>
+                  )
+                })}
+              </div>
+              
+              {/* Account Section */}
+              <div className="mt-6 pt-6 border-t border-orange-200">
+                <h3 className="text-lg font-bold text-gray-800 mb-3" style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif" }}>Account</h3>
+                <button
+                  onClick={() => {
+                    toggleMenu()
+                    handleMyProfile()
+                  }}
+                  className="w-full text-left block p-3 text-lg font-semibold text-gray-700 hover:text-gray-900 hover:bg-white/40 rounded-lg transition-all duration-200 mb-2"
+                  style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif", background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  👤 My Profile
+                </button>
+                <button
+                  onClick={() => {
+                    toggleMenu()
+                    handleMyOrders()
+                  }}
+                  className="w-full text-left block p-3 text-lg font-semibold text-gray-700 hover:text-gray-900 hover:bg-white/40 rounded-lg transition-all duration-200 mb-2"
+                  style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif", background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  📦 My Orders
+                </button>
+                <button
+                  className="w-full p-3 text-lg font-semibold text-gray-700 hover:text-gray-900 hover:bg-white/40 rounded-lg transition-all duration-200"
+                  style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif", background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+                  onClick={() => {
+                    toggleMenu()
+                    handleSignOut()
+                  }}
+                >
+                  🚪 Sign Out
+                </button>
               </div>
             </div>
           </div>

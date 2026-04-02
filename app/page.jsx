@@ -28,22 +28,22 @@ export default function SpiruboostLanding() {
   const features = [
     {
       title: 'Pure & Natural',
-      description: 'Sourced from pristine water sources, our spirulina is 100% organic and free from harmful chemicals.',
+      description: 'Sourced from pristine water sources, our spirulina is 100% organic and free from harmful chemicals. We work directly with sustainable farms that maintain the highest environmental standards, ensuring every batch delivers authentic, uncontaminated nutritional benefits. Our rigorous quality testing guarantees purity and potency in every serving.',
       image: 'linear-gradient(135deg, #2d5f5f 0%, #1a4d4d 100%)',
     },
     {
       title: 'High Nutrition',
-      description: 'Packed with 70% protein, vitamins, and essential amino acids for optimal health.',
+      description: 'Packed with 70% protein, vitamins, and essential amino acids for optimal health. Spirulina contains all nine essential amino acids, making it a complete protein source perfect for athletes and health enthusiasts. Rich in B vitamins, iron, and antioxidants, it supports energy production, immune function, and cellular regeneration.',
       image: 'linear-gradient(135deg, #3a7f7f 0%, #2d5f5f 100%)',
     },
     {
       title: 'Farm Fresh',
-      description: 'Harvested at peak freshness and processed within hours to retain maximum nutrients.',
+      description: 'Harvested at peak freshness and processed within hours to retain maximum nutrients. Our advanced drying and packaging techniques preserve the bioavailability of all essential compounds. Each product is handled with care to ensure you receive the most potent form of spirulina available, capturing the full spectrum of nutritional benefits.',
       image: 'linear-gradient(135deg, #4a9f9f 0%, #3a7f7f 100%)',
     },
     {
       title: 'Scientifically Backed',
-      description: 'Clinically proven benefits supported by multiple peer-reviewed scientific studies.',
+      description: 'Clinically proven benefits supported by multiple peer-reviewed scientific studies. Research demonstrates spirulina\'s effectiveness in improving energy levels, boosting immunity, and supporting cardiovascular health. Our products undergo independent laboratory testing to verify nutritional content and safety standards.',
       image: 'linear-gradient(135deg, #5abfbf 0%, #4a9f9f 100%)',
     },
   ];
@@ -102,7 +102,7 @@ export default function SpiruboostLanding() {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `linear-gradient(135deg, rgba(15, 23, 42, 0.65) 0%, rgba(26, 77, 77, 0.6) 50%, rgba(15, 79, 60, 0.65) 100%), url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-GS5qZJ68g6Bg1UfLwfnK7CAfFBsBj4.png')`,
+            backgroundImage: `linear-gradient(135deg, rgba(15, 23, 42, 0.65) 0%, rgba(26, 77, 77, 0.6) 50%, rgba(15, 79, 60, 0.65) 100%), url('/home_hero.png')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundAttachment: 'fixed',
@@ -158,31 +158,25 @@ export default function SpiruboostLanding() {
                       }`}>
                         {feature.title}
                       </h3>
-                      {activeFeature === idx && (
-                        <p className="text-gray-700 text-sm md:text-base leading-relaxed">
-                          {feature.description}
-                        </p>
-                      )}
+                      <p className={`text-gray-700 text-sm md:text-base leading-relaxed transition-all duration-500 lg:hidden ${
+                        activeFeature === idx ? 'block' : 'hidden'
+                      }`}>
+                        {feature.description}
+                      </p>
                     </div>
                   </div>
                 </button>
               ))}
             </div>
 
-            {/* Right Column - Text Section */}
-            <div className="space-y-6 md:space-y-8">
+            {/* Right Column - Text Section (Hidden on mobile, shown on desktop) */}
+            <div className="hidden lg:block space-y-6 md:space-y-8">
               <div>
                 <h3 className="text-2xl md:text-3xl font-bold text-gray-900 transition-all duration-500 mb-4">
                   {features[activeFeature].title}
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-base md:text-lg transition-all duration-500 mb-4">
                   {features[activeFeature].description}
-                </p>
-                <p className="text-gray-700 leading-relaxed text-base md:text-lg transition-all duration-500 mb-4">
-                  Our commitment to quality extends beyond sourcing. We implement rigorous testing protocols and maintain partnerships with leading health institutions to ensure every batch meets the highest standards of purity and potency.
-                </p>
-                <p className="text-gray-700 leading-relaxed text-base md:text-lg transition-all duration-500">
-                  Experience the transformative power of nature&apos;s most complete superfood. Whether you&apos;re an athlete seeking peak performance or someone on a wellness journey, Spiruboost adapts to your lifestyle and supports your unique health goals.
                 </p>
               </div>
 
@@ -191,6 +185,16 @@ export default function SpiruboostLanding() {
         </div>
       </section>
 
+              <section className="py-16 md:py-24 px-4 bg-linear-to-r from-teal-600 to-emerald-600">
+        <div className="container mx-auto max-w-6xl text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6">
+            Ready to Transform Your Health?
+          </h2>
+          <p className="text-base sm:text-lg text-white/90 mb-8 md:mb-12 max-w-2xl mx-auto">
+            Join thousands of satisfied customers who&apos;ve experienced the incredible benefits of Spiruboost
+          </p>
+        </div>
+      </section>
       {/* Products Section */}
       <section className="py-16 md:py-24 px-4 bg-white">
         <div className="container mx-auto max-w-6xl">
@@ -277,16 +281,7 @@ export default function SpiruboostLanding() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-24 px-4 bg-linear-to-r from-teal-600 to-emerald-600">
-        <div className="container mx-auto max-w-6xl text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6">
-            Ready to Transform Your Health?
-          </h2>
-          <p className="text-base sm:text-lg text-white/90 mb-8 md:mb-12 max-w-2xl mx-auto">
-            Join thousands of satisfied customers who&apos;ve experienced the incredible benefits of Spiruboost
-          </p>
-        </div>
-      </section>
+      
       </div>
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       <Footer />

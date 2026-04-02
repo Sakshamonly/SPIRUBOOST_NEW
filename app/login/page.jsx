@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Lock, Mail, Phone, User, Leaf } from 'lucide-react';
 import Navbar from '../components/usable/navbar';
@@ -11,6 +11,15 @@ export default function AuthPage() {
   const [mode, setMode] = useState('signin');
   const [signInStep, setSignInStep] = useState('credentials');
   const [signUpStep, setSignUpStep] = useState('details');
+  const [redirectAfterLogin, setRedirectAfterLogin] = useState(null);
+
+  // Check for redirect destination from sessionStorage on component mount
+  useEffect(() => {
+    const storedRedirect = sessionStorage.getItem('redirectAfterLogin');
+    if (storedRedirect) {
+      setRedirectAfterLogin(storedRedirect);
+    }
+  }, []);
 
   // Sign In State
   const [signInEmail, setSignInEmail] = useState('');
@@ -102,7 +111,11 @@ export default function AuthPage() {
     setSignInErrors({});
     setSignInSuccess(true);
     setTimeout(() => {
-      router.push('/user');
+      // Check if we have a redirect destination from navbar
+      const destination = redirectAfterLogin || '/user';
+      // Clear the stored redirect
+      sessionStorage.removeItem('redirectAfterLogin');
+      router.push(destination);
     }, 1500);
   };
 
@@ -123,7 +136,11 @@ export default function AuthPage() {
     setSignInErrors({});
     setSignInSuccess(true);
     setTimeout(() => {
-      router.push('/user');
+      // Check if we have a redirect destination from navbar
+      const destination = redirectAfterLogin || '/user';
+      // Clear the stored redirect
+      sessionStorage.removeItem('redirectAfterLogin');
+      router.push(destination);
     }, 1500);
   };
 

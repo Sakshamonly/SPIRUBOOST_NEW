@@ -13,7 +13,7 @@ export default function AnimalWellnessPage() {
   // HERO SECTION
   // ============================================
   const HeroSection = () => (
-    <section className="relative min-h-72 flex items-center justify-center overflow-hidden pt-20 pb-12">
+    <section className="relative min-h-72 flex items-center justify-center overflow-hidden pt-40 pb-12">
       {/* Custom gradient background */}
       <div 
         className="absolute inset-0"

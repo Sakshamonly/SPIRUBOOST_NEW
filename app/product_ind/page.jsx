@@ -98,12 +98,7 @@ function ProductInfo({ productId, onAddToCart, onAddToWishlist, onBuyNow }) {
             <ShoppingCart className="w-5 h-5" />
             Add to Cart
           </Button>
-          <Button
-            onClick={() => onAddToWishlist(productId)}
-            className="h-12 w-12 border border-gray-300 bg-white hover:bg-black hover:border-black transition-all duration-200 flex items-center justify-center rounded"
-          >
-            <Heart className="w-5 h-5 text-black hover:text-white" />
-          </Button>
+          
         </div>
 
         <Button
