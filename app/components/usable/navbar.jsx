@@ -96,7 +96,7 @@ export default function navbar() {
             <div className="shrink-0 flex items-center justify-center" style={{ minWidth: '200px' }}>
               <Link href="/" className="flex items-center justify-center space-x-2 hover:opacity-80 transition-opacity duration-300 h-full">
                 <Image
-                  src="/Spiruboost_logo.png"
+                  src="/Spiruboost_Logo.png"
                   alt="Spiruboost Logo"
                   width={200}
                   height={200}
@@ -194,7 +194,7 @@ export default function navbar() {
             {/* Center - Logo */}
             <Link href="/" className="flex items-center hover:opacity-80 transition-opacity duration-300">
               <Image
-                src="/Spiruboost_logo.png"
+                src="/Spiruboost_Logo.png"
                 alt="Spiruboost Logo"
                 width={150}
                 height={150}
@@ -236,7 +236,7 @@ export default function navbar() {
             {/* Center - Logo */}
             <Link href="/" className="flex items-center justify-center hover:opacity-80 transition-opacity duration-300 absolute top-1/2 -translate-y-1/2">
               <Image
-                src="/Spiruboost_logo.png"
+                src="/Spiruboost_Logo.png"
                 alt="Spiruboost Logo"
                 width={150}
                 height={150}

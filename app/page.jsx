@@ -146,7 +146,7 @@ export default function SpiruboostLanding() {
                 {/* Revive Image */}
                 <div className="flex flex-col items-center gap-2">
                   <img 
-                    src="/Revive.png" 
+                    src="/revive.png" 
                     alt="Revive" 
                     className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain hover:scale-110 transition-transform duration-300 cursor-pointer"
                   />
