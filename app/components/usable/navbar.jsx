@@ -93,13 +93,13 @@ export default function navbar() {
           {/* Desktop Layout - hidden on mobile and tablet */}
           <div className="hidden lg:flex items-center h-20 px-2 relative w-full">
             {/* Left - Logo */}
-            <div className="shrink-0 flex items-center" style={{ minWidth: '200px' }}>
-              <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity duration-300">
+            <div className="shrink-0 flex items-center justify-center" style={{ minWidth: '200px' }}>
+              <Link href="/" className="flex items-center justify-center space-x-2 hover:opacity-80 transition-opacity duration-300 h-full">
                 <Image
-                  src="/logo.png"
+                  src="/Spiruboost_logo.png"
                   alt="Spiruboost Logo"
-                  width={250}
-                  height={180}
+                  width={200}
+                  height={200}
                   className="object-contain drop-shadow-lg"
                   priority
                 />
@@ -194,10 +194,10 @@ export default function navbar() {
             {/* Center - Logo */}
             <Link href="/" className="flex items-center hover:opacity-80 transition-opacity duration-300">
               <Image
-                src="/logo.png"
+                src="/Spiruboost_logo.png"
                 alt="Spiruboost Logo"
-                width={180}
-                height={130}
+                width={150}
+                height={150}
                 className="object-contain drop-shadow-lg"
                 priority
               />
@@ -223,30 +223,30 @@ export default function navbar() {
           </div>
 
           {/* Mobile Layout (below 768px) */}
-          <div className="md:hidden flex items-center justify-between h-20 w-full px-2">
+          <div className="md:hidden flex items-center justify-center h-20 w-full px-2 relative">
             {/* Left - Hamburger */}
             <button
               onClick={toggleMenu}
-              className="p-2 text-gray-700 hover:text-gray-900 transition-all duration-300 z-10"
+              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 text-gray-700 hover:text-gray-900 transition-all duration-300 z-10"
               aria-label="Menu"
             >
               <HamburgerIcon isOpen={isMenuOpen} />
             </button>
 
             {/* Center - Logo */}
-            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity duration-300">
+            <Link href="/" className="flex items-center justify-center hover:opacity-80 transition-opacity duration-300 absolute top-1/2 -translate-y-1/2">
               <Image
-                src="/logo.png"
+                src="/Spiruboost_logo.png"
                 alt="Spiruboost Logo"
                 width={150}
-                height={100}
+                height={150}
                 className="object-contain drop-shadow-lg"
                 priority
               />
             </Link>
 
             {/* Right - Icons */}
-            <div className="flex items-center gap-1">
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
               <button
                 onClick={toggleSearch}
                 className="p-2 text-gray-700 hover:text-gray-900 transition-all duration-300"

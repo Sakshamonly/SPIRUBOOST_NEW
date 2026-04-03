@@ -23,6 +23,24 @@ export default function SpiruboostLanding() {
         scroll-behavior: auto;
       }
     }
+    .hero-bg {
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    @media (max-width: 1024px) {
+      .hero-bg {
+        background-attachment: scroll;
+      }
+    }
+    @media (max-width: 768px) {
+      .hero-bg {
+        background-size: cover;
+        background-position: center;
+        min-height: 100vh;
+      }
+    }
   `;
 
   const features = [
@@ -97,15 +115,17 @@ export default function SpiruboostLanding() {
       <Navbar />
       <div className="min-h-screen bg-white text-gray-900">
       {/* Hero Section with Background Image */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 md:pt-20">
+      <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden pt-16 md:pt-20">
         {/* Background Image with Overlay */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 hero-bg w-full h-full"
           style={{
             backgroundImage: `linear-gradient(135deg, rgba(15, 23, 42, 0.65) 0%, rgba(26, 77, 77, 0.6) 50%, rgba(15, 79, 60, 0.65) 100%), url('/home_hero.png')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundAttachment: 'fixed',
+            backgroundAttachment: 'scroll',
+            top: 0,
+            left: 0,
           }}
         ></div>
 
@@ -118,8 +138,40 @@ export default function SpiruboostLanding() {
                 Fuel Your Body with Pure Spirulina
               </h1>
               <p className="text-base sm:text-lg lg:text-xl text-gray-100 leading-relaxed text-balance">
-                Discover the power of nature&apos;s most nutrient-dense superfood. Boost your energy, immunity, and vitality with our premium organic spirulina.
+                Discover the power of nature&apos;s most nutrient-dense superfood. <br /> Boost your energy, immunity, and vitality with our premium pure spirulina.
               </p>
+
+              {/* Three Images Section */}
+              <div className="flex items-center justify-center gap-6 md:gap-8 pt-6 md:pt-8 flex-wrap">
+                {/* Revive Image */}
+                <div className="flex flex-col items-center gap-2">
+                  <img 
+                    src="/Revive.png" 
+                    alt="Revive" 
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain hover:scale-110 transition-transform duration-300 cursor-pointer"
+                  />
+                </div>
+
+                {/* Restore Image */}
+                <div className="flex flex-col items-center gap-2">
+                  <img 
+                    src="/Restore.png" 
+                    alt="Restore" 
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain hover:scale-110 transition-transform duration-300 cursor-pointer"
+                  />
+                  
+                </div>
+
+                {/* Recharge Image */}
+                <div className="flex flex-col items-center gap-2">
+                  <img 
+                    src="/Recharge.png" 
+                    alt="Recharge" 
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain hover:scale-110 transition-transform duration-300 cursor-pointer"
+                  />
+                  
+                </div>
+              </div>
             </div>
           </div>
         </div>
