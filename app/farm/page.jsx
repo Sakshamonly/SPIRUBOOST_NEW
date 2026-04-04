@@ -80,42 +80,45 @@ export default function OurFarmsPage() {
   };
 
   return (
-    <div className="w-full bg-white overflow-hidden">
+    <div className="w-full bg-white overflow-hidden scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
       <Navbar />
       {/* ============ HERO SECTION ============ */}
-      <section className="relative w-full h-screen flex items-center justify-center overflow-hidden pt-20"
+      <section className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center pt-20 sm:pt-32 px-4 sm:px-6 lg:px-8 overflow-hidden flex-col gap-4 sm:gap-6"
         style={{
           background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a52 35%, #1e4d6b 70%, #0f2e3d 100%)'
         }}>
-        
-        {/* Aurora effect orbs */}
-        <div className="absolute top-20 left-10 w-80 h-80 rounded-full filter blur-3xl opacity-40 animate-pulse"
-          style={{ background: 'radial-gradient(circle, rgba(100, 200, 200, 0.4) 0%, transparent 70%)' }} />
-        <div className="absolute bottom-20 right-10 w-80 h-80 rounded-full filter blur-3xl opacity-30 animate-pulse"
-          style={{ background: 'radial-gradient(circle, rgba(255, 140, 80, 0.3) 0%, transparent 70%)' }} />
 
-        {/* Content */}
-        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto animate-fadeInUp">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-light text-white mb-6 tracking-tight" style={{ fontFamily: 'Georgia, serif' }}>
-            From Farm to Formula
+        {/* Soft gradient glow orbs */}
+        <div className="absolute top-10 sm:top-20 left-1/4 w-48 sm:w-96 h-48 sm:h-96 rounded-full filter blur-3xl opacity-40"
+          style={{ background: 'radial-gradient(circle, rgba(255, 140, 80, 0.3) 0%, rgba(255, 140, 80, 0) 70%)' }} />
+        <div className="absolute bottom-10 sm:bottom-20 right-1/4 w-48 sm:w-96 h-48 sm:h-96 rounded-full filter blur-3xl opacity-30"
+          style={{ background: 'radial-gradient(circle, rgba(100, 200, 200, 0.25) 0%, rgba(100, 200, 200, 0) 70%)' }} />
+
+        {/* Hero content */}
+        <div className="relative z-10 text-center max-w-5xl mx-auto px-2">
+          <h1 className="text-2xl sm:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-white"
+            style={{ fontFamily: "'Georgia', serif", fontWeight: '700', letterSpacing: '-2px' }}>
+            Farm & <span style={{ color: '#e5aa0f' }}>Cultivation</span>
           </h1>
-          <p className="text-lg sm:text-xl text-gray-200 mb-8 font-light max-w-2xl mx-auto leading-relaxed">
-            Discover the journey of premium spirulina cultivation, refined through cutting-edge technology and rigorous quality standards
-          </p>
-          <button className="px-8 py-3 bg-transparent text-white font-medium transition-all duration-300 transform hover:scale-105 hover:bg-red-600 hover:text-white" style={{
-            border: 'none',
-            textDecoration: 'underline',
-            textDecorationColor: 'rgba(255,255,255,0.35)',
-            textDecorationThickness: '1px',
-            textUnderlineOffset: '4px',
-          }}>
-            <span className="pointer-events-none">Explore Our Story</span>
-          </button>
-        </div>
 
-        {/* Animated gradient orbs */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-green-500/20 rounded-full blur-3xl opacity-20 animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl opacity-20 animate-pulse" />
+          <p className="text-base sm:text-xl lg:text-2xl text-emerald-50 mb-4 sm:mb-6 leading-relaxed max-w-2xl mx-auto"
+            style={{ fontFamily: "'Georgia', serif", fontWeight: '500' }}>
+            From Farm to Formula
+          </p>
+
+          <p className="text-sm sm:text-base lg:text-lg text-gray-100 max-w-5xl mx-auto leading-relaxed mb-2"
+            style={{ fontFamily: "'Segoe UI', sans-serif", fontWeight: '400' }}>
+            Discover the journey of premium spirulina cultivation refined through cutting-edge technology and rigorous quality standards.
+          </p>
+
+          {/* Glowing underline */}
+          <div className="w-24 sm:w-32 h-1 mx-auto mt-4 sm:mt-6 rounded-full"
+            style={{
+              background: 'linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.6), transparent)',
+              boxShadow: '0 0 20px rgba(34, 197, 94, 0.4), inset 0 0 10px rgba(34, 197, 94, 0.3)',
+              filter: 'blur(0.5px)'
+            }} />
+        </div>
       </section>
 
       {/* quality/features section moved to bottom (placeholder removed) */}
@@ -158,10 +161,10 @@ export default function OurFarmsPage() {
               <div className="relative bg-gray-900 rounded-sm overflow-hidden shadow-2xl group">
                 {/* Image Placeholder */}
                 <div
-                  className="w-full aspect-[4/3] bg-gray-800 relative cursor-pointer overflow-hidden"
+                  className="w-full aspect-4/3 bg-gray-800 relative cursor-pointer overflow-hidden"
                   onClick={handleImageClick}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-linear-to-br from-gray-700 to-gray-900 flex items-center justify-center">
                     <div className="text-center">
                       <div className="text-6xl mb-4">🌾</div>
                       <p className="text-gray-400 text-sm">Image Placeholder {imageIndex + 1}</p>
@@ -259,7 +262,7 @@ export default function OurFarmsPage() {
             {/* Right Column - Video Placeholder */}
             <div className="animate-fadeInRight sticky top-24">
               <div className="relative rounded-sm overflow-hidden shadow-2xl group">
-                <div className="w-full aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative">
+                <div className="w-full aspect-video bg-linear-to-br from-gray-800 to-gray-900 flex items-center justify-center relative">
                   <div className="text-center">
                     <div className="text-6xl mb-4 opacity-70">▶</div>
                     <p className="text-gray-400 text-sm">Video Placeholder</p>
@@ -289,7 +292,7 @@ export default function OurFarmsPage() {
 
             {/* Image */}
             <div className="bg-gray-800 rounded-sm overflow-hidden">
-              <div className="w-full aspect-video bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
+              <div className="w-full aspect-video bg-linear-to-br from-gray-700 to-gray-900 flex items-center justify-center">
                 <p className="text-gray-400">Image Placeholder</p>
               </div>
             </div>

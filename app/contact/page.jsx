@@ -298,10 +298,10 @@ export default function ContactPage() {
                     <div className="flex-1">
                       <p className="text-sm text-gray-600 mb-1">Email</p>
                       <a
-                        href="mailto:info@spiruswastha.com"
+                        href="mailto:aarogyanutracecuticals@gmail.com"
                         className="text-sm font-semibold text-gray-900 hover:text-blue-700 transition-colors"
                       >
-                        info@spiruswastha.com
+                        aarogyanutracecuticals@gmail.com
                       </a>
                     </div>
                   </div>
@@ -358,10 +358,9 @@ export default function ContactPage() {
                     <div className="flex-1">
                       <p className="text-sm text-gray-600 mb-1">Address</p>
                       <p className="text-sm font-semibold text-gray-900 leading-relaxed">
-                        2nd Floor, Flat No. A/203,<br />
-                        Dev Prayag Residency, Opp. Shraddhadip Society,<br />
-                        Causeway Singapor Road, Surat,<br />
-                        Gujarat, 395004
+                        GF-39, The Hub<br />
+                        Runway Suits, Gaur Yamuna City YEIDA Sec-19<br />
+                        Greater Noida, Uttar Pradesh 203201
                       </p>
                     </div>
                   </div>

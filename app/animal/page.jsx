@@ -13,39 +13,41 @@ export default function AnimalWellnessPage() {
   // HERO SECTION
   // ============================================
   const HeroSection = () => (
-    <section className="relative min-h-72 flex items-center justify-center overflow-hidden pt-40 pb-12">
-      {/* Custom gradient background */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a52 35%, #1e4d6b 70%, #0f2e3d 100%)'
-        }}
-      />
-      
-      {/* Aurora effect overlay */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-400 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-teal-400 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-        <div className="absolute -bottom-8 left-1/2 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '4s' }} />
-      </div>
+    <section className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center pt-20 sm:pt-32 px-4 sm:px-6 lg:px-8 overflow-hidden flex-col gap-4 sm:gap-6"
+      style={{
+        background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a52 35%, #1e4d6b 70%, #0f2e3d 100%)'
+      }}>
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="text-white">
-          {/* Main heading */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight tracking-tight">
-            Smarter Nutrition for Healthier Livestock
-          </h1>
+      {/* Soft gradient glow orbs */}
+      <div className="absolute top-10 sm:top-20 left-1/4 w-48 sm:w-96 h-48 sm:h-96 rounded-full filter blur-3xl opacity-40"
+        style={{ background: 'radial-gradient(circle, rgba(255, 140, 80, 0.3) 0%, rgba(255, 140, 80, 0) 70%)' }} />
+      <div className="absolute bottom-10 sm:bottom-20 right-1/4 w-48 sm:w-96 h-48 sm:h-96 rounded-full filter blur-3xl opacity-30"
+        style={{ background: 'radial-gradient(circle, rgba(100, 200, 200, 0.25) 0%, rgba(100, 200, 200, 0) 70%)' }} />
 
-          {/* Subtext */}
-          <p className="text-base sm:text-lg text-white/85 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
-            Premium spirulina supplementation that improves growth, boosts immunity, and enhances productivity across all poultry operations.
-          </p>
+      {/* Hero content */}
+      <div className="relative z-10 text-center max-w-5xl mx-auto px-2">
+        <h1 className="text-2xl sm:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-white"
+          style={{ fontFamily: "'Georgia', serif", fontWeight: '700', letterSpacing: '-2px' }}>
+          Animal <span style={{ color: '#e5aa0f' }}>Wellness</span>
+        </h1>
 
-          {/* CTA Button */}
-          <button className="px-8 py-3 text-white font-semibold rounded-lg hover:bg-red-600 transition-all duration-300 transform hover:scale-105">
-            Get Started
-          </button>
-        </div>
+        <p className="text-base sm:text-xl lg:text-2xl text-emerald-50 mb-4 sm:mb-6 leading-relaxed max-w-2xl mx-auto"
+          style={{ fontFamily: "'Georgia', serif", fontWeight: '500' }}>
+          Premium Nutrition for Healthier Livestock
+        </p>
+
+        <p className="text-sm sm:text-base lg:text-lg text-gray-100 max-w-5xl mx-auto leading-relaxed mb-2"
+          style={{ fontFamily: "'Segoe UI', sans-serif", fontWeight: '400' }}>
+          Spirulina supplementation that improves growth, boosts immunity, and enhances productivity across all poultry operations.
+        </p>
+
+        {/* Glowing underline */}
+        <div className="w-24 sm:w-32 h-1 mx-auto mt-4 sm:mt-6 rounded-full"
+          style={{
+            background: 'linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.6), transparent)',
+            boxShadow: '0 0 20px rgba(34, 197, 94, 0.4), inset 0 0 10px rgba(34, 197, 94, 0.3)',
+            filter: 'blur(0.5px)'
+          }} />
       </div>
     </section>
   );

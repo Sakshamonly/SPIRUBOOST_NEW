@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import Navbar from './components/usable/navbar';
 import Footer from './components/usable/footer';
@@ -41,28 +41,47 @@ export default function SpiruboostLanding() {
         min-height: 100vh;
       }
     }
+    .cta-hero-bg {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 700ms ease, transform 700ms ease;
+      will-change: opacity, transform;
+      background-attachment: fixed;
+    }
+    .cta-hero-bg.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (max-width: 1024px) {
+      .cta-hero-bg {
+        background-attachment: scroll;
+      }
+    }
   `;
 
   const features = [
     {
-      title: 'Pure & Natural',
-      description: 'Sourced from pristine water sources, our spirulina is 100% organic and free from harmful chemicals. We work directly with sustainable farms that maintain the highest environmental standards, ensuring every batch delivers authentic, uncontaminated nutritional benefits. Our rigorous quality testing guarantees purity and potency in every serving.',
-      image: 'linear-gradient(135deg, #2d5f5f 0%, #1a4d4d 100%)',
+      title: 'Daily Nutrition Gap',
+      description: 'Modern lifestyles and fast-paced eating habits often leave essential nutrients missing from our daily diet. Even regular meals may not provide the complete balance of proteins, vitamins, minerals, and antioxidants the body needs for long-term wellness.',
+      
     },
     {
-      title: 'High Nutrition',
-      description: 'Packed with 70% protein, vitamins, and essential amino acids for optimal health. Spirulina contains all nine essential amino acids, making it a complete protein source perfect for athletes and health enthusiasts. Rich in B vitamins, iron, and antioxidants, it supports energy production, immune function, and cellular regeneration.',
-      image: 'linear-gradient(135deg, #3a7f7f 0%, #2d5f5f 100%)',
+      title: 'Hidden Malnutrition',
+      description: 'Across the world, millions of people consume enough calories but still suffer from hidden malnutrition due to nutrient-poor food choices and processed diets. This silent deficiency affects energy, immunity, focus, and overall health.',
+      
     },
     {
-      title: 'Farm Fresh',
-      description: 'Harvested at peak freshness and processed within hours to retain maximum nutrients. Our advanced drying and packaging techniques preserve the bioavailability of all essential compounds. Each product is handled with care to ensure you receive the most potent form of spirulina available, capturing the full spectrum of nutritional benefits.',
-      image: 'linear-gradient(135deg, #4a9f9f 0%, #3a7f7f 100%)',
+      title: 'Spirulina as a Solution',
+      description: 'SpiruBoost uses nutrient-dense spirulina to help bridge these daily nutritional gaps. Rich in plant protein, antioxidants, phytonutrients, and essential micronutrients, it offers a simple way to support everyday wellness.',
+    
     },
     {
-      title: 'Scientifically Backed',
-      description: 'Clinically proven benefits supported by multiple peer-reviewed scientific studies. Research demonstrates spirulina\'s effectiveness in improving energy levels, boosting immunity, and supporting cardiovascular health. Our products undergo independent laboratory testing to verify nutritional content and safety standards.',
-      image: 'linear-gradient(135deg, #5abfbf 0%, #4a9f9f 100%)',
+      title: 'Better Health for All',
+      description: 'Our mission is to make better daily nutrition simple, accessible, and effective for everyone. We aim to support healthier lifestyles by helping people build strong wellness habits with trusted spirulina-based nutrition.',
+      
     },
   ];
 
@@ -109,6 +128,21 @@ export default function SpiruboostLanding() {
     setScrollPosition(scrollPosition + scroll);
   };
 
+  const ctaRef = useRef(null);
+  const [ctaInView, setCtaInView] = useState(false);
+
+  useEffect(() => {
+    if (!ctaRef.current) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        setCtaInView(entry.isIntersecting);
+      },
+      { threshold: 0.45 }
+    );
+    obs.observe(ctaRef.current);
+    return () => obs.disconnect();
+  }, []);
+
   return (
     <>
       <style>{styles}</style>
@@ -133,12 +167,12 @@ export default function SpiruboostLanding() {
         <div className="relative z-10 container mx-auto px-4 lg:px-8 py-20">
           <div className="flex items-center justify-center text-center">
             {/* Center Content */}
-            <div className="text-white space-y-6 max-w-3xl">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-balance">
-                Fuel Your Body with Pure Spirulina
+            <div className="text-white space-y-6 max-w-5xl">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-balance">
+                Closing the daily nutrition <span style={{color: '#fde957'}}>with Spirulina</span>
               </h1>
               <p className="text-base sm:text-lg lg:text-xl text-gray-100 leading-relaxed text-balance">
-                Discover the power of nature&apos;s most nutrient-dense superfood. <br /> Boost your energy, immunity, and vitality with our premium pure spirulina.
+                Modern diets often miss essential nutrients despite regular meals. <br /> Spiru<span style={{color: '#fde957'}}>Boost</span> was created to help bridge this hidden nutrition gap with <span style={{color: '#e5aa0f'}}>premium spirulina</span> for daily energy, immunity, and overall wellness.
               </p>
 
               {/* Three Images Section */}
@@ -148,7 +182,7 @@ export default function SpiruboostLanding() {
                   <img 
                     src="/revive.png" 
                     alt="Revive" 
-                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain hover:scale-110 transition-transform duration-300 cursor-pointer"
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain"
                   />
                 </div>
 
@@ -157,7 +191,7 @@ export default function SpiruboostLanding() {
                   <img 
                     src="/Restore.png" 
                     alt="Restore" 
-                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain hover:scale-110 transition-transform duration-300 cursor-pointer"
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain"
                   />
                   
                 </div>
@@ -167,7 +201,7 @@ export default function SpiruboostLanding() {
                   <img 
                     src="/Recharge.png" 
                     alt="Recharge" 
-                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain hover:scale-110 transition-transform duration-300 cursor-pointer"
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain"
                   />
                   
                 </div>
@@ -185,7 +219,7 @@ export default function SpiruboostLanding() {
         }}
       >
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 md:mb-16 text-gray-900">Why Choose Spiruboost?</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 md:mb-16 text-gray-900">Why We Exist</h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             {/* Left Column - Clean Feature List */}
@@ -237,8 +271,16 @@ export default function SpiruboostLanding() {
         </div>
       </section>
 
-              <section className="py-16 md:py-24 px-4 bg-linear-to-r from-teal-600 to-emerald-600">
-        <div className="container mx-auto max-w-6xl text-center">
+      <section ref={ctaRef} className="relative py-16 md:py-24 px-4">
+        {/* CTA background re-using hero image and overlay for the same visual effect */}
+        <div
+          className={`absolute inset-0 cta-hero-bg ${ctaInView ? 'in-view' : ''}`}
+          style={{
+            backgroundImage: `linear-gradient(135deg, rgba(15, 23, 42, 0.65) 0%, rgba(26, 77, 77, 0.6) 50%, rgba(15, 79, 60, 0.65) 100%), url('/home_hero.png')`
+          }}
+        />
+
+        <div className="relative z-10 container mx-auto max-w-6xl text-center">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6">
             Ready to Transform Your Health?
           </h2>

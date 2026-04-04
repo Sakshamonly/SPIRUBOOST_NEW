@@ -1,8 +1,17 @@
 "use client";
 import React from 'react';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Footer() {
+  const handleNavClick = (e, href) => {
+    // Smooth scroll handling for internal links
+    if (href.startsWith('/')) {
+      e.preventDefault();
+      window.location.href = href;
+    }
+  };
+
   return (
     <footer className="bg-linear-to-br from-slate-800 to-slate-900 text-gray-200">
       {/* Main Content */}
@@ -16,34 +25,49 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <a href="/" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                <Link href="/" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
                   Home
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/about" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                <Link href="/about" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
                   About
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/products" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                <Link href="/products" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
                   Products
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/animal" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                <Link href="/animal" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
                   Animal Wellness
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/farm" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                <Link href="/farm" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
                   Our Farm
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/blog" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                <Link href="/blog" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
                   Blog
-                </a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/wellness" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                  Wellness
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link href="/login" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                  My Account
+                </Link>
               </li>
             </ul>
           </div>
@@ -51,33 +75,33 @@ export default function Footer() {
           {/* Shipping Terms Section */}
           <div>
             <h3 className="text-white text-xl font-bold mb-6 relative inline-block pb-2 border-b-2 border-blue-500">
-              Shipping Terms
+              Policies & Terms
             </h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <a href="#" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                <Link href="/shipping" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
                   Shipping Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
-                  Return and Refund Policy
-                </a>
+                <Link href="/return" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                  Return & Refund Policy
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                <Link href="/privacy" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                <Link href="/terms&conditions" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
                   Terms & Conditions
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
+                <Link href="/orders" className="text-gray-300 hover:text-blue-400 transition duration-300 transform hover:translate-x-1 inline-block">
                   Track Your Order
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -90,18 +114,17 @@ export default function Footer() {
             <div className="space-y-4 text-sm">
               <div className="text-gray-300 leading-relaxed">
                 <p className="font-semibold text-white mb-2">Address:</p>
-                <p>2nd Floor, Flat No. A/203,</p>
-                <p>Dev Prayag Residency, Opp.</p>
-                <p>Shraddhadip Society, Causeway</p>
-                <p>Singapor Road, Singapor, Surat,</p>
-                <p>Gujarat, 395004</p>
+                <p>GF-39, The Hub</p>
+                <p>Runway Suits, Gaur Yamuna City</p>
+                <p>YEIDA Sec-19, Greater Noida,</p>
+                <p>Uttar Pradesh 203201</p>
               </div>
               
               <div className="pt-4 border-t border-slate-700">
                 <div className="flex items-center gap-2 mb-3 group cursor-pointer">
                   <Mail className="w-4 h-4 text-blue-400 group-hover:text-blue-300 transition duration-300" />
-                  <a href="mailto:info@spiruswastha.com" className="text-gray-300 hover:text-blue-400 transition duration-300 text-xs">
-                    info@spiruswastha.com
+                  <a href="mailto:aarogyanutracecuticals@gmail.com" className="text-gray-300 hover:text-blue-400 transition duration-300 text-xs">
+                    aarogyanutracecuticals@gmail.com
                   </a>
                 </div>
                 <div className="flex items-center gap-2 group cursor-pointer">
