@@ -80,7 +80,6 @@ export default function OurFarmsPage() {
   };
 
   return (
-<<<<<<< HEAD
     <div className="w-full bg-white overflow-hidden scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
       <Navbar />
       {/* ============ HERO SECTION ============ */}
@@ -120,44 +119,6 @@ export default function OurFarmsPage() {
               filter: 'blur(0.5px)'
             }} />
         </div>
-=======
-    <div className="w-full bg-white overflow-hidden">
-      <Navbar />
-      {/* ============ HERO SECTION ============ */}
-      <section className="relative w-full h-screen flex items-center justify-center overflow-hidden pt-20"
-        style={{
-          background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a52 35%, #1e4d6b 70%, #0f2e3d 100%)'
-        }}>
-        
-        {/* Aurora effect orbs */}
-        <div className="absolute top-20 left-10 w-80 h-80 rounded-full filter blur-3xl opacity-40 animate-pulse"
-          style={{ background: 'radial-gradient(circle, rgba(100, 200, 200, 0.4) 0%, transparent 70%)' }} />
-        <div className="absolute bottom-20 right-10 w-80 h-80 rounded-full filter blur-3xl opacity-30 animate-pulse"
-          style={{ background: 'radial-gradient(circle, rgba(255, 140, 80, 0.3) 0%, transparent 70%)' }} />
-
-        {/* Content */}
-        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto animate-fadeInUp">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-light text-white mb-6 tracking-tight" style={{ fontFamily: 'Georgia, serif' }}>
-            From Farm to Formula
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-200 mb-8 font-light max-w-2xl mx-auto leading-relaxed">
-            Discover the journey of premium spirulina cultivation, refined through cutting-edge technology and rigorous quality standards
-          </p>
-          <button className="px-8 py-3 bg-transparent text-white font-medium transition-all duration-300 transform hover:scale-105 hover:bg-red-600 hover:text-white" style={{
-            border: 'none',
-            textDecoration: 'underline',
-            textDecorationColor: 'rgba(255,255,255,0.35)',
-            textDecorationThickness: '1px',
-            textUnderlineOffset: '4px',
-          }}>
-            <span className="pointer-events-none">Explore Our Story</span>
-          </button>
-        </div>
-
-        {/* Animated gradient orbs */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-green-500/20 rounded-full blur-3xl opacity-20 animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl opacity-20 animate-pulse" />
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
       </section>
 
       {/* quality/features section moved to bottom (placeholder removed) */}
@@ -200,17 +161,10 @@ export default function OurFarmsPage() {
               <div className="relative bg-gray-900 rounded-sm overflow-hidden shadow-2xl group">
                 {/* Image Placeholder */}
                 <div
-<<<<<<< HEAD
                   className="w-full aspect-4/3 bg-gray-800 relative cursor-pointer overflow-hidden"
                   onClick={handleImageClick}
                 >
                   <div className="absolute inset-0 bg-linear-to-br from-gray-700 to-gray-900 flex items-center justify-center">
-=======
-                  className="w-full aspect-[4/3] bg-gray-800 relative cursor-pointer overflow-hidden"
-                  onClick={handleImageClick}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
                     <div className="text-center">
                       <div className="text-6xl mb-4">🌾</div>
                       <p className="text-gray-400 text-sm">Image Placeholder {imageIndex + 1}</p>
@@ -308,11 +262,7 @@ export default function OurFarmsPage() {
             {/* Right Column - Video Placeholder */}
             <div className="animate-fadeInRight sticky top-24">
               <div className="relative rounded-sm overflow-hidden shadow-2xl group">
-<<<<<<< HEAD
                 <div className="w-full aspect-video bg-linear-to-br from-gray-800 to-gray-900 flex items-center justify-center relative">
-=======
-                <div className="w-full aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative">
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
                   <div className="text-center">
                     <div className="text-6xl mb-4 opacity-70">▶</div>
                     <p className="text-gray-400 text-sm">Video Placeholder</p>
@@ -342,11 +292,7 @@ export default function OurFarmsPage() {
 
             {/* Image */}
             <div className="bg-gray-800 rounded-sm overflow-hidden">
-<<<<<<< HEAD
               <div className="w-full aspect-video bg-linear-to-br from-gray-700 to-gray-900 flex items-center justify-center">
-=======
-              <div className="w-full aspect-video bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
                 <p className="text-gray-400">Image Placeholder</p>
               </div>
             </div>
@@ -572,8 +518,4 @@ export default function OurFarmsPage() {
       <Footer />
     </div>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174

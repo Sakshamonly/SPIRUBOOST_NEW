@@ -1,34 +1,20 @@
-<<<<<<< HEAD
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
-=======
-
-'use client';
-
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
 import Navbar from './components/usable/navbar';
 import Footer from './components/usable/footer';
 import CartSidebar from './components/usable/cart';
 import { ProductCard } from './components/usable/product-card';
 import Link from 'next/link';
-<<<<<<< HEAD
 import API from '../lib/api';
-=======
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
 
 export default function SpiruboostLanding() {
   const [activeFeature, setActiveFeature] = useState(0);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
-<<<<<<< HEAD
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
-=======
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
 
   const styles = `
     html {
@@ -39,7 +25,6 @@ export default function SpiruboostLanding() {
         scroll-behavior: auto;
       }
     }
-<<<<<<< HEAD
     .hero-bg {
       background-attachment: fixed;
       background-size: cover;
@@ -77,13 +62,10 @@ export default function SpiruboostLanding() {
         background-attachment: scroll;
       }
     }
-=======
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
   `;
 
   const features = [
     {
-<<<<<<< HEAD
       title: 'Daily Nutrition Gap',
       description:
         'Modern lifestyles and fast-paced eating habits often leave essential nutrients missing from our daily diet. Even regular meals may not provide the complete balance of proteins, vitamins, minerals, and antioxidants the body needs for long-term wellness.',
@@ -105,40 +87,10 @@ export default function SpiruboostLanding() {
     },
   ];
 
-=======
-      title: 'Pure & Natural',
-      description: 'Sourced from pristine water sources, our spirulina is 100% organic and free from harmful chemicals.',
-      image: 'linear-gradient(135deg, #2d5f5f 0%, #1a4d4d 100%)',
-    },
-    {
-      title: 'High Nutrition',
-      description: 'Packed with 70% protein, vitamins, and essential amino acids for optimal health.',
-      image: 'linear-gradient(135deg, #3a7f7f 0%, #2d5f5f 100%)',
-    },
-    {
-      title: 'Farm Fresh',
-      description: 'Harvested at peak freshness and processed within hours to retain maximum nutrients.',
-      image: 'linear-gradient(135deg, #4a9f9f 0%, #3a7f7f 100%)',
-    },
-    {
-      title: 'Scientifically Backed',
-      description: 'Clinically proven benefits supported by multiple peer-reviewed scientific studies.',
-      image: 'linear-gradient(135deg, #5abfbf 0%, #4a9f9f 100%)',
-    },
-  ];
-
-  const productsData = [
-    { id: 1, name: 'Spiruboost Capsules', price: 499, image: 'https://5.imimg.com/data5/SELLER/Default/2022/10/WM/SG/QK/91285886/13-spirulina-1000x1000.jpg' },
-    { id: 2, name: 'Spiruboost Tablets', price: 799, image: 'https://source.unsplash.com/800x600/?spirulina,tablet&sig=2' },
-    { id: 3, name: 'Spiruboost Powder', price: 299, image: 'https://source.unsplash.com/800x600/?spirulina,powder&sig=3' },
-  ];
-
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
   const blogPosts = [
     {
       id: 1,
       title: "The Power of Spirulina: Nature's Superfood",
-<<<<<<< HEAD
       excerpt:
         'Discover how spirulina can boost your energy levels and improve overall health with our comprehensive guide.',
       author: 'Dr. Sarah Mitchell',
@@ -215,30 +167,10 @@ export default function SpiruboostLanding() {
     localStorage.setItem('cartItems', JSON.stringify(updatedCart));
     localStorage.removeItem('buyNowItem');
     localStorage.removeItem('checkoutItem');
-=======
-      excerpt: "Discover how spirulina can boost your energy levels and improve overall health with our comprehensive guide.",
-      author: "Dr. Sarah Mitchell",
-      date: "March 28, 2026",
-      image: "🌱",
-    },
-    {
-      id: 2,
-      title: "Sustainable Farming Practices at Spiruboost",
-      excerpt: "Learn how we're committed to eco-friendly production methods and environmental sustainability.",
-      author: "John Patterson",
-      date: "March 25, 2026",
-      image: "🌾",
-    },
-  ];
-
-  const handleAddToCart = (productId) => {
-    console.log(`Added product ${productId} to cart`);
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
     setIsCartOpen(true);
   };
 
   const handleBuyNow = (productId) => {
-<<<<<<< HEAD
     const selectedProduct = featuredProducts.find((p) => String(p.id) === String(productId));
     if (!selectedProduct) return;
 
@@ -250,17 +182,11 @@ export default function SpiruboostLanding() {
       })
     );
 
-=======
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
     window.location.href = '/checkout';
   };
 
   const handleProductClick = (productId) => {
-<<<<<<< HEAD
     window.location.href = `/product_ind?id=${productId}`;
-=======
-    window.location.href = '/product_ind';
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
   };
 
   const handleScrollPlatforms = (direction) => {
@@ -268,7 +194,6 @@ export default function SpiruboostLanding() {
     setScrollPosition(scrollPosition + scroll);
   };
 
-<<<<<<< HEAD
   const ctaRef = useRef(null);
   const [ctaInView, setCtaInView] = useState(false);
 
@@ -284,14 +209,11 @@ export default function SpiruboostLanding() {
     return () => obs.disconnect();
   }, []);
 
-=======
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
   return (
     <>
       <style>{styles}</style>
       <Navbar />
       <div className="min-h-screen bg-white text-gray-900">
-<<<<<<< HEAD
         <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden pt-16 md:pt-20">
           <div
             className="absolute inset-0 hero-bg w-full h-full"
@@ -525,206 +447,8 @@ export default function SpiruboostLanding() {
         </section>
       </div>
 
-=======
-      {/* Hero Section with Background Image */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 md:pt-20">
-        {/* Background Image with Overlay */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `linear-gradient(135deg, rgba(15, 23, 42, 0.65) 0%, rgba(26, 77, 77, 0.6) 50%, rgba(15, 79, 60, 0.65) 100%), url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-GS5qZJ68g6Bg1UfLwfnK7CAfFBsBj4.png')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundAttachment: 'fixed',
-          }}
-        ></div>
-
-        {/* Hero Content Container */}
-        <div className="relative z-10 container mx-auto px-4 lg:px-8 py-20">
-          <div className="flex items-center justify-center text-center">
-            {/* Center Content */}
-            <div className="text-white space-y-6 max-w-3xl">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-balance">
-                Fuel Your Body with Pure Spirulina
-              </h1>
-              <p className="text-base sm:text-lg lg:text-xl text-gray-100 leading-relaxed text-balance">
-                Discover the power of nature&apos;s most nutrient-dense superfood. Boost your energy, immunity, and vitality with our premium organic spirulina.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Spiruboost Section */}
-      <section 
-        className="py-16 md:py-24 px-4"
-        style={{
-          background: 'linear-gradient(135deg, #f5f5f5 0%, #e8f0ff 50%, #fff0e8 100%)',
-        }}
-      >
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 md:mb-16 text-gray-900">Why Choose Spiruboost?</h2>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            {/* Left Column - Clean Feature List */}
-            <div className="space-y-6 md:space-y-8">
-              {features.map((feature, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveFeature(idx)}
-                  className={`w-full text-left pb-6 md:pb-8 border-b border-gray-300 transition-all duration-500 ${
-                    activeFeature === idx ? 'opacity-100' : 'opacity-75 hover:opacity-90'
-                  }`}
-                >
-                  <div className="flex items-start gap-4">
-                    <span className={`text-3xl md:text-4xl font-bold transition-colors duration-500 ${
-                      activeFeature === idx ? 'text-teal-600' : 'text-gray-300'
-                    }`}>
-                      {String(idx + 1).padStart(2, '0')}
-                    </span>
-                    <div className="flex-1">
-                      <h3 className={`font-bold text-lg md:text-xl mb-2 transition-colors duration-500 ${
-                        activeFeature === idx ? 'text-gray-900' : 'text-gray-600'
-                      }`}>
-                        {feature.title}
-                      </h3>
-                      {activeFeature === idx && (
-                        <p className="text-gray-700 text-sm md:text-base leading-relaxed">
-                          {feature.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            {/* Right Column - Text Section */}
-            <div className="space-y-6 md:space-y-8">
-              <div>
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 transition-all duration-500 mb-4">
-                  {features[activeFeature].title}
-                </h3>
-                <p className="text-gray-700 leading-relaxed text-base md:text-lg transition-all duration-500 mb-4">
-                  {features[activeFeature].description}
-                </p>
-                <p className="text-gray-700 leading-relaxed text-base md:text-lg transition-all duration-500 mb-4">
-                  Our commitment to quality extends beyond sourcing. We implement rigorous testing protocols and maintain partnerships with leading health institutions to ensure every batch meets the highest standards of purity and potency.
-                </p>
-                <p className="text-gray-700 leading-relaxed text-base md:text-lg transition-all duration-500">
-                  Experience the transformative power of nature&apos;s most complete superfood. Whether you&apos;re an athlete seeking peak performance or someone on a wellness journey, Spiruboost adapts to your lifestyle and supports your unique health goals.
-                </p>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Products Section */}
-      <section className="py-16 md:py-24 px-4 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-12 md:mb-16">
-            <p className="text-sm font-semibold text-teal-600 uppercase tracking-wide mb-2">Our Collection</p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 md:mb-6">Featured Products</h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-              Experience the power of nature with our premium spirulina products
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
-            {productsData.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={handleAddToCart}
-                onBuyNow={handleBuyNow}
-                onProductClick={handleProductClick}
-              />
-            ))}
-          </div>
-
-          <div className="flex justify-center">
-            <Link href="/products" className="inline-block px-8 py-4 text-slate-900 font-bold transition-all duration-300 hover:bg-slate-900 hover:text-white border-2 border-slate-900 hover:border-slate-900 rounded-lg">
-              View All Products
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Blog Section */}
-      <section 
-        className="py-16 md:py-24 px-4"
-        style={{
-          background: 'linear-gradient(135deg, #f5f5f5 0%, #e8f0ff 50%, #e8f5e9 100%)',
-        }}
-      >
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-12 md:mb-16">
-            <p className="text-sm font-semibold text-teal-600 uppercase tracking-wide mb-2">Featured</p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 md:mb-6">Must Read Articles</h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-              Explore insights about nutrition, wellness, and sustainable farming
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12">
-            {blogPosts.map((post) => (
-              <Link
-                key={post.id}
-                href={`/blog/${post.id}`}
-                className="group cursor-pointer"
-              >
-                <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 h-full flex flex-col">
-                  <div className="w-16 h-16 bg-linear-to-br from-teal-300 to-emerald-500 rounded-full flex items-center justify-center text-3xl mb-6">
-                    {post.image}
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 leading-tight group-hover:text-teal-600 transition-colors duration-300">
-                    {post.title}
-                  </h3>
-                  <p className="text-gray-600 text-base mb-6 leading-relaxed grow">
-                    {post.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between text-gray-500 text-sm border-t border-gray-200 pt-4 mt-auto">
-                    <div>
-                      <span className="font-semibold text-gray-700">{post.author}</span>
-                      <span className="mx-2">•</span>
-                      <span>{post.date}</span>
-                    </div>
-                    <ArrowRight className="w-5 h-5 group-hover:text-teal-600 group-hover:translate-x-1 transition-all duration-300" />
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          <div className="flex justify-center">
-            <Link href="/blog" className="inline-block px-8 py-4 text-slate-900 font-bold transition-all duration-300 hover:bg-slate-900 hover:text-white border-2 border-slate-900 hover:border-slate-900 rounded-lg">
-              Explore All Blogs
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 md:py-24 px-4 bg-linear-to-r from-teal-600 to-emerald-600">
-        <div className="container mx-auto max-w-6xl text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6">
-            Ready to Transform Your Health?
-          </h2>
-          <p className="text-base sm:text-lg text-white/90 mb-8 md:mb-12 max-w-2xl mx-auto">
-            Join thousands of satisfied customers who&apos;ve experienced the incredible benefits of Spiruboost
-          </p>
-        </div>
-      </section>
-      </div>
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       <Footer />
     </>
   );
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174

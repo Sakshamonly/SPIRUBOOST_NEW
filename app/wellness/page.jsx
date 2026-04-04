@@ -8,7 +8,6 @@ import Navbar from "../components/usable/navbar";
 export default function SpiruboostWellness() {
   const [openModal, setOpenModal] = useState(null);
 
-<<<<<<< HEAD
   // Hero Section Component
   const HeroSection = () => (
     <section className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center pt-20 sm:pt-32 px-4 sm:px-6 lg:px-8 overflow-hidden flex-col gap-4 sm:gap-6"
@@ -47,8 +46,6 @@ export default function SpiruboostWellness() {
     </section>
   );
 
-=======
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
   const benefits = [
     {
       id: 1,
@@ -222,7 +219,6 @@ export default function SpiruboostWellness() {
 
   const equivalence = [
     {
-<<<<<<< HEAD
       amount: '10 Eggs',
       equals: 'Comparable protein support',
       icon: '🥚'
@@ -250,35 +246,6 @@ export default function SpiruboostWellness() {
     {
       amount: '10 Oranges',
       equals: 'Antioxidant equivalent',
-=======
-      amount: '10g of Spirulina',
-      equals: 'Protein equivalent to 100g chicken breast',
-      icon: '🍗'
-    },
-    {
-      amount: '1 tablespoon',
-      equals: 'More beta-carotene than 2 carrots',
-      icon: '🥕'
-    },
-    {
-      amount: '5g daily',
-      equals: 'Iron content of 2 spinach servings',
-      icon: '🥬'
-    },
-    {
-      amount: '1 teaspoon',
-      equals: 'B12 equivalent to 1 glass of milk',
-      icon: '🥛'
-    },
-    {
-      amount: '15g serving',
-      equals: 'Chlorophyll of 250g spirulina-equivalent greens',
-      icon: '🌿'
-    },
-    {
-      amount: '20g daily',
-      equals: 'Antioxidants of 8 oranges',
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
       icon: '🍊'
     }
   ];
@@ -316,36 +283,7 @@ export default function SpiruboostWellness() {
     }
   ];
 
-<<<<<<< HEAD
   
-=======
-  const dailyRoutine = [
-    {
-      time: '🌅 Morning',
-      benefit: 'Energy Boost',
-      description: 'Start your day with sustained energy. Spirulina provides natural B vitamins and iron for morning vitality without the jitters.',
-      color: 'from-amber-50 to-orange-50'
-    },
-    {
-      time: '☀️ Afternoon',
-      benefit: 'Mental Focus',
-      description: 'Mid-day slump? Combat afternoon fatigue with improved concentration and mental clarity for peak productivity.',
-      color: 'from-cyan-50 to-blue-50'
-    },
-    {
-      time: '💪 Post-Workout',
-      benefit: 'Muscle Recovery',
-      description: 'Complete amino acids support muscle repair and recovery. Reduce soreness and accelerate adaptation.',
-      color: 'from-purple-50 to-pink-50'
-    },
-    {
-      time: '🌙 Evening',
-      benefit: 'Wellness Support',
-      description: 'End your day supporting overall health and regeneration for better sleep and recovery overnight.',
-      color: 'from-slate-50 to-teal-50'
-    }
-  ];
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
 
   const ModalContent = ({ benefit }) => (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
@@ -413,37 +351,7 @@ export default function SpiruboostWellness() {
         .smooth-scroll{scroll-behavior:smooth}
       `}</style>
       <style>{`.smooth-scroll{scroll-behavior:smooth} .text-balance{line-height:1.05}`}</style>
-<<<<<<< HEAD
       <HeroSection />
-=======
-      {/* ===== HERO SECTION - Nature's Blueprint (gradient background) ===== */}
-      <section
-        className="relative w-full h-[75vh] md:h-[85vh] lg:h-[95vh] overflow-hidden pt-20"
-        style={{ background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a52 35%, #1e4d6b 70%, #0f2e3d 100%)' }}
-      >
-        <div className="relative z-10 max-w-6xl mx-auto h-full flex items-center px-4 sm:px-6 lg:px-8">
-          <div className="w-full text-center text-white mx-auto">
-            <p className="text-sm font-semibold tracking-widest text-teal-200 uppercase mb-2">Spirulina Nature Superfood</p>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-4 text-white">Nature's <span className="text-teal-300">Blueprint</span></h1>
-            <p className="text-lg md:text-xl text-white/95 max-w-3xl mx-auto leading-relaxed mb-8 drop-shadow-lg">Precision-engineered bio-algae synthesized for maximum cellular absorption — the ultimate synthesis of ancient vitality and modern science.</p>
-            <div className="flex gap-4 justify-center">
-              <button onClick={() => {
-                const molecularSection = document.querySelector('[data-section="molecular"]');
-                if (molecularSection) {
-                  molecularSection.scrollIntoView({ behavior: 'smooth' });
-                }
-              }} className="px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-full shadow-lg transition-all">Get Started</button>
-            </div>
-          </div>
-        </div>
-
-        <div className="absolute bottom-0 left-0 right-0 overflow-hidden leading-none">
-          <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-28 md:h-36">
-            <path d="M0,0 C300,100 900,0 1200,80 L1200,120 L0,120 Z" fill="#ffffff" />
-          </svg>
-        </div>
-      </section>
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
 
       {/* ===== ABOUT SPIRULINA - The Molecular Forest Within ===== */}
       <section className="py-20 md:py-28 bg-white" data-section="molecular">
@@ -453,11 +361,7 @@ export default function SpiruboostWellness() {
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 animate-slide-up">
               The Molecular Forest Within
             </h2>
-<<<<<<< HEAD
             <div className="h-1 w-24 bg-linear-to-r from-emerald-500 to-blue-500 mx-auto rounded-full"></div>
-=======
-            <div className="h-1 w-24 bg-gradient-to-r from-emerald-500 to-blue-500 mx-auto rounded-full"></div>
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
           </div>
 
           {/* Two Column Layout: Left = details + integrated composition bullets, Right = Who can use it (paragraphs) */}
@@ -515,22 +419,14 @@ export default function SpiruboostWellness() {
       </section>
 
       {/* ===== EQUIVALENCE SECTION - The Superfood Paradox ===== */}
-<<<<<<< HEAD
       <section className="py-20 md:py-28 px-4 md:px-8 bg-linear-to-br from-slate-900 via-emerald-900 to-slate-900">
-=======
-      <section className="py-20 md:py-28 px-4 md:px-8 bg-gradient-to-br from-slate-900 via-emerald-900 to-slate-900">
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 animate-slide-up">
               The Superfood Paradox
             </h2>
             <p className="text-lg text-slate-300 max-w-3xl mx-auto">
-<<<<<<< HEAD
               100g of Spirulina is Equivalent To
-=======
-              See how a small serving of Spirulina compares to conventional nutritional sources
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
             </p>
           </div>
 
@@ -578,8 +474,4 @@ export default function SpiruboostWellness() {
       <Footer />
     </div>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
