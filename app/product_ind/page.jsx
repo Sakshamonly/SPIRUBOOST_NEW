@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "../components/usable/navbar";
 import Footer from "../components/usable/footer";
@@ -54,17 +54,17 @@ const normalizeFaqs = (value) => {
 };
 
 const normalizeProduct = (data = {}) => {
-  const images = []
+  const images = [];
 
   if (Array.isArray(data.images)) {
-    images.push(...data.images.filter(Boolean))
+    images.push(...data.images.filter(Boolean));
   }
 
-  if (data.image) images.push(data.image)
-  if (data.mainImage) images.push(data.mainImage)
+  if (data.image) images.push(data.image);
+  if (data.mainImage) images.push(data.mainImage);
 
-  const benefits = splitList(data.benefits || data.keyBenefits)
-  const howToUse = Array.isArray(data.howToUse) ? data.howToUse : splitList(data.howToUse)
+  const benefits = splitList(data.benefits || data.keyBenefits);
+  const howToUse = Array.isArray(data.howToUse) ? data.howToUse : splitList(data.howToUse);
 
   return {
     id: data._id || data.id || "",
@@ -98,7 +98,7 @@ const normalizeProduct = (data = {}) => {
     isActive: data.isActive !== false,
     rating: Number(data.rating || 4.8),
     reviewsCount: Number(data.reviewsCount || data.totalReviews || 124),
-  }
+  };
 };
 
 function ProductInfo({ product, onAddToCart, onAddToWishlist, onBuyNow }) {
@@ -155,7 +155,9 @@ function ProductInfo({ product, onAddToCart, onAddToWishlist, onBuyNow }) {
       )}
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <div className="text-3xl font-bold text-gray-900">₹{Number(product.price || 0).toLocaleString("en-IN")}</div>
+        <div className="text-3xl font-bold text-gray-900">
+          ₹{Number(product.price || 0).toLocaleString("en-IN")}
+        </div>
         <div
           className={`px-3 py-1 rounded-full text-sm font-medium w-fit ${
             Number(product.countInStock || 0) > 0
@@ -528,7 +530,7 @@ function ProductDetail({ product, onAddToCart, onAddToWishlist, onBuyNow }) {
   );
 }
 
-export default function ProductDetailPage() {
+function ProductDetailPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const productId = searchParams.get("id");
@@ -590,7 +592,10 @@ export default function ProductDetailPage() {
     );
     const stockLimit = Number(selectedProduct.countInStock || 0);
     const currentQuantity = Number(existingItem?.quantity || 0);
-    const nextQuantity = stockLimit > 0 ? Math.min(currentQuantity + quantity, stockLimit) : currentQuantity + quantity;
+    const nextQuantity =
+      stockLimit > 0
+        ? Math.min(currentQuantity + quantity, stockLimit)
+        : currentQuantity + quantity;
 
     if (existingItem && currentQuantity >= nextQuantity) {
       setIsCartOpen(true);
@@ -685,5 +690,22 @@ export default function ProductDetailPage() {
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       <Footer />
     </>
+  );
+}
+
+export default function ProductDetailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 pt-20">
+          <Navbar />
+          <div className="max-w-7xl mx-auto px-4 py-16 text-center text-gray-500">
+            Loading product...
+          </div>
+        </div>
+      }
+    >
+      <ProductDetailPageContent />
+    </Suspense>
   );
 }
