@@ -100,16 +100,26 @@ const BlogPage = () => {
   const featuredPosts = blogPosts.filter((post) => post.featured);
 
   return (
+<<<<<<< HEAD
     <div className="min-h-screen bg-white scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
       <Navbar />
       
       {/* Hero Section */}
       <section 
         className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center pt-20 sm:pt-32 px-4 sm:px-6 lg:px-8 overflow-hidden flex-col gap-4 sm:gap-6"
+=======
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      
+      {/* Hero Section with Gradient Background */}
+      <section 
+        className="relative min-h-[70vh] md:min-h-[80vh] lg:min-h-screen flex items-center justify-center overflow-hidden pt-20"
+>>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
         style={{
           background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a52 35%, #1e4d6b 70%, #0f2e3d 100%)'
         }}
       >
+<<<<<<< HEAD
 
         {/* Soft gradient glow orbs */}
         <div className="absolute top-10 sm:top-20 left-1/4 w-48 sm:w-96 h-48 sm:h-96 rounded-full filter blur-3xl opacity-40"
@@ -150,15 +160,34 @@ const BlogPage = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto mb-8">
+=======
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
+          
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-8 leading-tight">
+            Stories & <span className="text-teal-300">Insights</span>
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl text-white/90 font-light max-w-2xl mx-auto mb-16 leading-relaxed">
+            Discover articles about nutrition, wellness, sustainable farming, and natural beauty
+          </p>
+          
+          {/* Search Bar */}
+          <div className="max-w-2xl mx-auto mb-12">
+>>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
             <div className="relative">
               <input
                 type="text"
                 placeholder="Search articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+<<<<<<< HEAD
                 className="w-full px-6 py-4 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all text-gray-900 placeholder-gray-500"
               />
               <Search className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+=======
+                className="w-full px-6 py-4 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg focus:outline-none focus:border-white/60 transition-colors duration-300 text-white placeholder-white/60 font-light"
+              />
+              <Search className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60" />
+>>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
             </div>
           </div>
 
@@ -176,8 +205,13 @@ const BlogPage = () => {
                 onClick={() => setSelectedCategory(category.name)}
                 className={`text-xs sm:text-sm font-light tracking-wide transition-all duration-300 pb-2 px-2 ${
                   selectedCategory === category.name
+<<<<<<< HEAD
                     ? "text-teal-600 border-b-2 border-teal-600"
                     : "text-gray-600 hover:text-gray-900 border-b-2 border-transparent"
+=======
+                    ? "text-white border-b-2 border-teal-300"
+                    : "text-white/70 hover:text-white border-b-2 border-transparent"
+>>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
                 }`}
               >
                 {category.label}
@@ -319,4 +353,8 @@ const BlogPage = () => {
   );
 };
 
+<<<<<<< HEAD
 export default BlogPage;
+=======
+export default BlogPage;
+>>>>>>> 39578b119d7e217399a8cb93e4e979e19660c174
