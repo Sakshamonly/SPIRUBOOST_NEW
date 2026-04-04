@@ -470,7 +470,7 @@ export default function Coupons() {
                       </td>
                       <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-600 hidden xl:table-cell">
                         <span
-                          className="block max-w-[220px] truncate"
+                          className="block max-w-55 truncate"
                           title={
                             Array.isArray(coupon.clauses) && coupon.clauses.length
                               ? coupon.clauses.join(" | ")

@@ -354,7 +354,7 @@ export default function AuthPage() {
               >
                 Sign Up
                 {mode === "signup" && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-teal-500 to-emerald-500"></div>
                 )}
               </button>
             </div>
@@ -477,7 +477,7 @@ export default function AuthPage() {
                     <button
                       onClick={handlePasswordSubmit}
                       disabled={signInSuccess || signInLoading}
-                      className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white font-semibold py-3 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
+                      className="w-full bg-linear-to-r from-teal-500 to-emerald-600 text-white font-semibold py-3 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
                     >
                       {signInLoading ? "Please wait..." : signInSuccess ? "✓ Welcome!" : "Enter Laboratory"}
                     </button>
