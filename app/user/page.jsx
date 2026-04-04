@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { Suspense, useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import {
   LogOut,
@@ -29,7 +29,8 @@ import Navbar from "@/app/components/usable/navbar"
 import Footer from "@/app/components/usable/footer"
 import API from "../../lib/api"
 
-export default function UserDashboard() {
+function UserDashboardContent() {
+
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -1153,3 +1154,20 @@ export default function UserDashboard() {
     </div>
   )
 }
+export default function UserDashboard() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-white text-gray-800">
+          <Navbar />
+          <div className="pt-40 flex items-center justify-center">
+            <Loader2 className="h-10 w-10 animate-spin text-gray-500" />
+          </div>
+        </div>
+      }
+    >
+      <UserDashboardContent />
+    </Suspense>
+  )
+}
+
