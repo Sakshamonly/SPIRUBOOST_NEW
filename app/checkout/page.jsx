@@ -94,6 +94,16 @@ const formatAddressLine = (address) => {
     .join(", ")
 }
 
+const formatEstimatedDeliveryDate = (value) => {
+  const date = new Date(value || Date.now())
+  date.setDate(date.getDate() + 5)
+  return date.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })
+}
+
 const Header = () => {
   return (
     <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/95 backdrop-blur">
@@ -635,8 +645,18 @@ export default function CheckoutPage() {
   const [isSavingAddress, setIsSavingAddress] = useState(false)
   const [availableCoupons, setAvailableCoupons] = useState([])
   const [isLoadingCoupons, setIsLoadingCoupons] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [successOrder, setSuccessOrder] = useState(null)
 
   useEffect(() => {
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+      sessionStorage.setItem("redirectAfterLogin", "/checkout")
+      router.replace("/login")
+      return
+    }
+
     const buyNowItem = JSON.parse(localStorage.getItem("buyNowItem") || "null")
     const checkoutItem = JSON.parse(localStorage.getItem("checkoutItem") || "null")
     const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]")
@@ -681,7 +701,7 @@ export default function CheckoutPage() {
         },
       ])
     }
-  }, [])
+  }, [router])
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -920,6 +940,7 @@ export default function CheckoutPage() {
   })
 
   const clearCheckoutStorage = () => {
+    localStorage.removeItem("buyNowItem")
     localStorage.removeItem("checkoutItem")
     localStorage.removeItem("cartItems")
   }
@@ -990,7 +1011,7 @@ export default function CheckoutPage() {
               razorpay_signature: response.razorpay_signature,
             })
 
-            await API.post("/orders", {
+            const orderResponse = await API.post("/orders", {
               ...orderPayload,
               paymentMethod: "razorpay",
               paymentResult: {
@@ -1001,9 +1022,10 @@ export default function CheckoutPage() {
               },
             })
 
+            const placedOrder = orderResponse.data?.order || orderResponse.data
             clearCheckoutStorage()
-            alert("Payment successful and order placed!")
-            router.push("/")
+            setSuccessOrder(placedOrder)
+            setShowSuccessModal(true)
           } catch (error) {
             console.error("Payment verification/order save failed:", error)
             alert(error?.response?.data?.message || "Payment succeeded but order confirmation failed.")
@@ -1090,6 +1112,72 @@ export default function CheckoutPage() {
         onSave={handleSaveNewAddress}
         isSaving={isSavingAddress}
       />
+
+      {showSuccessModal && successOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+            <div className="flex flex-col items-center text-center">
+              <div className="relative mb-5 flex h-24 w-24 items-center justify-center">
+                <div className="absolute inset-0 rounded-full bg-green-200 animate-ping opacity-50" />
+                <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-green-500 text-white shadow-lg">
+                  <svg className="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="3"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <h2 className="text-2xl font-bold text-gray-900">Order Placed Successfully</h2>
+              <p className="mt-2 text-sm text-gray-600">
+                Your payment was successful and your order is now confirmed.
+              </p>
+            </div>
+
+            <div className="mt-6 rounded-2xl bg-gray-50 p-4 text-sm text-gray-700">
+              <p><strong>Order ID:</strong> {successOrder.orderNumber || successOrder._id}</p>
+              <p>
+                <strong>Name:</strong>{" "}
+                {`${successOrder?.shippingAddress?.firstName || ""} ${successOrder?.shippingAddress?.lastName || ""}`.trim()}
+              </p>
+              <p><strong>Address:</strong> {formatAddressLine(successOrder?.shippingAddress || {})}</p>
+              <p>
+                <strong>Mobile:</strong>{" "}
+                {successOrder?.shippingAddress?.contactType === "mobile"
+                  ? successOrder?.shippingAddress?.contactValue
+                  : successOrder?.user?.mobile || "N/A"}
+              </p>
+              <p><strong>Estimated Delivery:</strong> {formatEstimatedDeliveryDate(successOrder?.createdAt)}</p>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSuccessModal(false)
+                  router.push("/user?tab=orders")
+                }}
+                className="flex-1 rounded-2xl bg-black px-5 py-3 font-semibold text-white transition hover:bg-gray-800"
+              >
+                View My Orders
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSuccessModal(false)
+                  router.push("/")
+                }}
+                className="flex-1 rounded-2xl border border-gray-300 px-5 py-3 font-semibold text-gray-700 transition hover:bg-gray-100"
+              >
+                Continue Shopping
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

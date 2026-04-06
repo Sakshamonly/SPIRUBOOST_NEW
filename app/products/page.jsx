@@ -8,6 +8,7 @@ import CartSidebar from "../components/usable/cart";
 import Footer from "../components/usable/footer";
 import Navbar from "../components/usable/navbar";
 import API from "../../lib/api";
+import { resolveMediaUrl } from "../../lib/resolve-media";
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -54,11 +55,15 @@ export default function ProductsPage() {
         name: product.name || "Unnamed Product",
         sku: product.sku || `SKU-${index + 1}`,
         price: Number(product.price) || 0,
-        image:
+        image: resolveMediaUrl(
           product.image ||
-          (Array.isArray(product.images) && product.images[0]) ||
-          "https://via.placeholder.com/600x600?text=Product",
-        images: Array.isArray(product.images) ? product.images.filter(Boolean) : [],
+            (Array.isArray(product.images) && product.images[0]) ||
+            "",
+          "https://via.placeholder.com/600x600?text=Product"
+        ),
+        images: Array.isArray(product.images)
+          ? product.images.filter(Boolean).map((image) => resolveMediaUrl(image, ""))
+          : [],
         category: normalizeCategory(product.category, product.name),
         description: product.description || "",
         overview: product.overview || "",
@@ -70,6 +75,8 @@ export default function ProductsPage() {
             ? product.countInStock
             : Number(product.stock || 0),
         quantitySold: Number(product.quantitySold || 0),
+        rating: Number(product.rating || 0),
+        reviewsCount: Number(product.reviewsCount || product.totalReviews || 0),
         status: product.status || (product.isActive === false ? "inactive" : "active"),
         isActive: product.isActive !== false,
       }));
@@ -117,6 +124,9 @@ export default function ProductsPage() {
 
     if (!selectedProduct) return;
 
+    const stockLimit = Number(selectedProduct.countInStock || 0);
+    if (stockLimit <= 0) return;
+
     const existingCart =
       typeof window !== "undefined"
         ? JSON.parse(localStorage.getItem("cartItems") || "[]")
@@ -125,7 +135,6 @@ export default function ProductsPage() {
     const existingItem = existingCart.find(
       (item) => String(item.id) === String(selectedProduct.id)
     );
-    const stockLimit = Number(selectedProduct.countInStock || 0);
     const currentQuantity = Number(existingItem?.quantity || 0);
     const nextQuantity = stockLimit > 0 ? Math.min(currentQuantity + 1, stockLimit) : currentQuantity + 1;
 
@@ -161,6 +170,14 @@ export default function ProductsPage() {
     );
 
     if (!selectedProduct) return;
+    if (Number(selectedProduct.countInStock || 0) <= 0) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      sessionStorage.setItem("redirectAfterLogin", `/product_ind?id=${selectedProduct.id}`);
+      router.push("/login");
+      return;
+    }
 
     localStorage.setItem(
       "buyNowItem",

@@ -1,22 +1,39 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Lock, Mail, Leaf } from "lucide-react";
-import Navbar from "../components/usable/navbar";
-import Footer from "../components/usable/footer";
-import API from "../../lib/api";
+import { useEffect, useRef, useState } from 'react';
+import Script from 'next/script';
+import { useRouter } from 'next/navigation';
+import { Eye, EyeOff } from 'lucide-react';
+import Navbar from '../components/usable/navbar';
+import Footer from '../components/usable/footer';
+import API from '../../lib/api';
+
+function GoogleIcon() {
+  return (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+      <path fill="#FBBC05" d="M5.84 14.09A7.02 7.02 0 0 1 5.49 12c0-.73.13-1.43.35-2.09V7.07H2.18A11.96 11.96 0 0 0 1 12c0 1.78.43 3.45 1.18 4.93l4.66-2.84z" />
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z" />
+    </svg>
+  );
+}
 
 export default function AuthPage() {
   const router = useRouter();
+  const googleButtonRefs = useRef({});
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
 
-  const [mode, setMode] = useState("signin");
-  const [signInStep, setSignInStep] = useState("credentials");
-  const [signUpStep, setSignUpStep] = useState("details");
+  const [mode, setMode] = useState('signin');
+  const [signInStep, setSignInStep] = useState('credentials');
+  const [signUpStep, setSignUpStep] = useState('details');
+  const [redirectAfterLogin, setRedirectAfterLogin] = useState(null);
+  const [googleScriptLoaded, setGoogleScriptLoaded] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
-  const [signInEmail, setSignInEmail] = useState("");
-  const [signInPassword, setSignInPassword] = useState("");
-  const [signInOtp, setSignInOtp] = useState("");
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
+  const [signInOtp, setSignInOtp] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [authMethod, setAuthMethod] = useState(null);
   const [signInErrors, setSignInErrors] = useState({});
@@ -24,26 +41,34 @@ export default function AuthPage() {
   const [signInSuccess, setSignInSuccess] = useState(false);
   const [signInLoading, setSignInLoading] = useState(false);
 
-  const [signUpName, setSignUpName] = useState("");
-  const [signUpEmail, setSignUpEmail] = useState("");
-  const [signUpPhone, setSignUpPhone] = useState("");
-  const [signUpPassword, setSignUpPassword] = useState("");
-  const [signUpOtp, setSignUpOtp] = useState("");
+  const [signUpName, setSignUpName] = useState('');
+  const [signUpEmail, setSignUpEmail] = useState('');
+  const [signUpPhone, setSignUpPhone] = useState('');
+  const [signUpPassword, setSignUpPassword] = useState('');
+  const [signUpOtp, setSignUpOtp] = useState('');
   const [signUpErrors, setSignUpErrors] = useState({});
   const [showSignUpPassword, setShowSignUpPassword] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
   const [signUpLoading, setSignUpLoading] = useState(false);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const storedRedirect = sessionStorage.getItem('redirectAfterLogin');
+    if (storedRedirect) {
+      setRedirectAfterLogin(storedRedirect);
+    }
+  }, []);
+
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const validatePhone = (phone) => /^\d{10}$/.test(phone.replace(/\D/g, ""));
+  const validatePhone = (phone) => /^\d{10}$/.test(phone.replace(/\D/g, ''));
   const validatePassword = (password) => {
     const errors = [];
-    if (password.length < 8) errors.push("At least 8 characters");
-    if (password.length > 15) errors.push("Maximum 15 characters");
-    if (!/[A-Z]/.test(password)) errors.push("One uppercase letter");
-    if (!/[a-z]/.test(password)) errors.push("One lowercase letter");
-    if (!/[0-9]/.test(password)) errors.push("One number");
-    if (!/[!@#$%^&*]/.test(password)) errors.push("One special character (!@#$%^&*)");
+    if (password.length < 8) errors.push('At least 8 characters');
+    if (password.length > 15) errors.push('Maximum 15 characters');
+    if (!/[A-Z]/.test(password)) errors.push('One uppercase letter');
+    if (!/[a-z]/.test(password)) errors.push('One lowercase letter');
+    if (!/[0-9]/.test(password)) errors.push('One number');
+    if (!/[!@#$%^&*]/.test(password)) errors.push('One special character (!@#$%^&*)');
     return errors;
   };
   const validateOtp = (otp) => /^\d{6}$/.test(otp);
@@ -51,8 +76,9 @@ export default function AuthPage() {
   const getErrorMessage = (error, fallback) =>
     error?.response?.data?.message || error?.response?.data?.error || fallback;
 
-  const saveAuthData = (data) => {
-    if (typeof window === "undefined") return;
+  const saveAuthData = (data, shouldRemember = rememberMe) => {
+    if (typeof window === 'undefined') return;
+
     const token =
       data?.token ||
       data?.accessToken ||
@@ -65,66 +91,119 @@ export default function AuthPage() {
       null;
 
     if (token) {
-      localStorage.setItem("token", token);
-      if (rememberMe) localStorage.setItem("rememberMe", "true");
-      else localStorage.removeItem("rememberMe");
+      localStorage.setItem('token', token);
+      if (shouldRemember) localStorage.setItem('rememberMe', 'true');
+      else localStorage.removeItem('rememberMe');
     }
-    if (user) localStorage.setItem("user", JSON.stringify(user));
+
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    }
   };
 
-  const redirectAfterLogin = (user) => {
-    if (user?.isAdmin || user?.role === "admin") router.push("/admin");
-    else router.push("/user");
+  const redirectUser = (user) => {
+    const destination =
+      redirectAfterLogin ||
+      (user?.isAdmin || user?.role === 'admin' ? '/admin' : '/user');
+
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('redirectAfterLogin');
+    }
+
+    router.push(destination);
   };
 
-  const resetSignIn = () => {
-    setSignInEmail("");
-    setSignInPassword("");
-    setSignInOtp("");
-    setRememberMe(false);
-    setAuthMethod(null);
-    setSignInStep("credentials");
-    setSignInSuccess(false);
-    setSignInErrors({});
-    setSignInLoading(false);
+  const handleGoogleCredentialResponse = async (googleResponse) => {
+    try {
+      if (!googleResponse?.credential) {
+        setSignInErrors({ api: 'Google sign-in did not return a valid credential.' });
+        return;
+      }
+
+      setGoogleLoading(true);
+      setSignInErrors({});
+
+      const response = await API.post('/users/google-login', {
+        credential: googleResponse.credential,
+      });
+
+      saveAuthData(response.data, true);
+      setSignInSuccess(true);
+
+      const user =
+        response?.data?.user ||
+        response?.data?.data?.user ||
+        response?.data?.result?.user ||
+        null;
+
+      setTimeout(() => redirectUser(user), 800);
+    } catch (error) {
+      setSignInErrors({ api: getErrorMessage(error, 'Google sign-in failed. Please try again.') });
+    } finally {
+      setGoogleLoading(false);
+    }
   };
 
-  const resetSignUp = () => {
-    setSignUpName("");
-    setSignUpEmail("");
-    setSignUpPhone("");
-    setSignUpPassword("");
-    setSignUpOtp("");
-    setSignUpStep("details");
-    setSignUpSuccess(false);
-    setSignUpErrors({});
-    setSignUpLoading(false);
-  };
+  useEffect(() => {
+    if (!googleScriptLoaded || !googleClientId) return;
+    if (typeof window === 'undefined' || !window.google?.accounts?.id) return;
+
+    window.google.accounts.id.initialize({
+      client_id: googleClientId,
+      callback: handleGoogleCredentialResponse,
+      auto_select: false,
+      cancel_on_tap_outside: true,
+    });
+
+    ['signin-mobile', 'signin-web', 'signup-mobile', 'signup-web'].forEach((key) => {
+      const node = googleButtonRefs.current[key];
+      if (!node) return;
+
+      node.innerHTML = '';
+      window.google.accounts.id.renderButton(node, {
+        type: 'standard',
+        theme: 'outline',
+        size: 'large',
+        shape: 'rectangular',
+        text: 'continue_with',
+        logo_alignment: 'left',
+        width: node.offsetWidth || 320,
+      });
+    });
+  }, [googleClientId, googleScriptLoaded]);
 
   const handleSignInNext = async () => {
     const errors = {};
-    if (!signInEmail.trim()) errors.email = "Email or mobile number required";
-    else if (!validateEmail(signInEmail) && !validatePhone(signInEmail))
-      errors.email = "Enter valid email or 10-digit mobile number";
-    if (Object.keys(errors).length) {
+
+    if (!signInEmail.trim()) {
+      errors.email = 'Email or mobile number required';
+    } else if (!validateEmail(signInEmail) && !validatePhone(signInEmail)) {
+      errors.email = 'Enter valid email or 10-digit mobile number';
+    }
+
+    if (Object.keys(errors).length > 0) {
       setSignInErrors(errors);
       return;
     }
+
     try {
       setSignInLoading(true);
       setSignInErrors({});
-      const response = await API.post("/users/check-user", { identifier: signInEmail });
+      const response = await API.post('/users/check-user', { identifier: signInEmail });
+
       if (!response?.data?.exists) {
-        setSignInErrors({ email: "User not found. Please sign up first." });
+        setSignInErrors({ email: 'User not found. Please sign up first.' });
         return;
       }
+
       if (!response?.data?.isEmailVerified) {
-        setSignInErrors({ email: "Please verify your email first before signing in." });
+        setSignInErrors({ email: 'Please verify your email first before signing in.' });
         return;
       }
-      setSignInStep("authmethod");
+
+      setSignInStep('authmethod');
     } catch (error) {
-      setSignInErrors({ api: getErrorMessage(error, "Unable to verify user.") });
+      setSignInErrors({ api: getErrorMessage(error, 'Unable to verify user.') });
     } finally {
       setSignInLoading(false);
     }
@@ -133,16 +212,18 @@ export default function AuthPage() {
   const handleAuthMethodSelect = async (method) => {
     setAuthMethod(method);
     setSignInErrors({});
-    if (method === "password") {
-      setSignInStep("password");
+
+    if (method === 'password') {
+      setSignInStep('password');
       return;
     }
+
     try {
       setSignInLoading(true);
-      await API.post("/users/send-login-otp", { identifier: signInEmail });
-      setSignInStep("otp");
+      await API.post('/users/send-login-otp', { identifier: signInEmail });
+      setSignInStep('otp');
     } catch (error) {
-      setSignInErrors({ api: getErrorMessage(error, "Unable to send OTP. Please try again.") });
+      setSignInErrors({ api: getErrorMessage(error, 'Unable to send OTP. Please try again.') });
     } finally {
       setSignInLoading(false);
     }
@@ -150,32 +231,42 @@ export default function AuthPage() {
 
   const handlePasswordSubmit = async () => {
     const errors = {};
-    if (!signInPassword.trim()) errors.password = "Password required";
-    else {
+
+    if (!signInPassword.trim()) {
+      errors.password = 'Password required';
+    } else {
       const passwordErrors = validatePassword(signInPassword);
-      if (passwordErrors.length) errors.password = `Password must have: ${passwordErrors.join(", ")}`;
+      if (passwordErrors.length > 0) {
+        errors.password = `Password must have: ${passwordErrors.join(', ')}`;
+      }
     }
-    if (Object.keys(errors).length) {
+
+    if (Object.keys(errors).length > 0) {
       setSignInErrors(errors);
       return;
     }
+
     try {
       setSignInLoading(true);
       setSignInErrors({});
-      const response = await API.post("/users/login", {
+
+      const response = await API.post('/users/login', {
         identifier: signInEmail,
         password: signInPassword,
       });
+
       saveAuthData(response.data);
       setSignInSuccess(true);
+
       const user =
         response?.data?.user ||
         response?.data?.data?.user ||
         response?.data?.result?.user ||
         null;
-      setTimeout(() => redirectAfterLogin(user), 1000);
+
+      setTimeout(() => redirectUser(user), 1000);
     } catch (error) {
-      setSignInErrors({ api: getErrorMessage(error, "Login failed. Please check your credentials.") });
+      setSignInErrors({ api: getErrorMessage(error, 'Login failed. Please check your credentials.') });
     } finally {
       setSignInLoading(false);
     }
@@ -183,47 +274,70 @@ export default function AuthPage() {
 
   const handleSignInOtpSubmit = async () => {
     const errors = {};
-    if (!signInOtp.trim()) errors.otp = "OTP required";
-    else if (!validateOtp(signInOtp)) errors.otp = "OTP must be 6 digits";
-    if (Object.keys(errors).length) {
+
+    if (!signInOtp.trim()) {
+      errors.otp = 'OTP required';
+    } else if (!validateOtp(signInOtp)) {
+      errors.otp = 'OTP must be 6 digits';
+    }
+
+    if (Object.keys(errors).length > 0) {
       setSignInErrors(errors);
       return;
     }
+
     try {
       setSignInLoading(true);
       setSignInErrors({});
-      const response = await API.post("/users/verify-login-otp", {
+
+      const response = await API.post('/users/verify-login-otp', {
         identifier: signInEmail,
         otp: signInOtp,
       });
+
       saveAuthData(response.data);
       setSignInSuccess(true);
+
       const user =
         response?.data?.user ||
         response?.data?.data?.user ||
         response?.data?.result?.user ||
         null;
-      setTimeout(() => redirectAfterLogin(user), 1000);
+
+      setTimeout(() => redirectUser(user), 1000);
     } catch (error) {
-      setSignInErrors({ api: getErrorMessage(error, "OTP verification failed.") });
+      setSignInErrors({ api: getErrorMessage(error, 'OTP verification failed.') });
     } finally {
       setSignInLoading(false);
     }
   };
 
+  const resetSignIn = () => {
+    setSignInEmail('');
+    setSignInPassword('');
+    setSignInOtp('');
+    setRememberMe(false);
+    setAuthMethod(null);
+    setSignInStep('credentials');
+    setSignInSuccess(false);
+    setSignInErrors({});
+    setSignInLoading(false);
+  };
+
   const handleForgotPassword = async () => {
     if (!signInEmail.trim()) {
-      setSignInErrors({ email: "Enter email or mobile number first" });
+      setSignInErrors({ email: 'Enter email or mobile number first' });
       return;
     }
+
     try {
       setSignInLoading(true);
       setSignInErrors({});
-      await API.post("/users/send-login-otp", { identifier: signInEmail });
-      setAuthMethod("otp");
-      setSignInStep("otp");
+      await API.post('/users/send-login-otp', { identifier: signInEmail });
+      setAuthMethod('otp');
+      setSignInStep('otp');
     } catch (error) {
-      setSignInErrors({ api: getErrorMessage(error, "Unable to send OTP.") });
+      setSignInErrors({ api: getErrorMessage(error, 'Unable to send OTP.') });
     } finally {
       setSignInLoading(false);
     }
@@ -231,33 +345,55 @@ export default function AuthPage() {
 
   const handleSignUpDetailsSubmit = async () => {
     const errors = {};
-    if (!signUpName.trim()) errors.name = "Name required";
-    if (!signUpEmail.trim()) errors.email = "Email required";
-    else if (!validateEmail(signUpEmail)) errors.email = "Enter valid email";
-    if (!signUpPhone.trim()) errors.phone = "Mobile number required";
-    else if (!validatePhone(signUpPhone)) errors.phone = "Enter valid 10-digit mobile number";
-    if (!signUpPassword.trim()) errors.password = "Password required";
-    else {
-      const passwordErrors = validatePassword(signUpPassword);
-      if (passwordErrors.length) errors.password = `Password must have: ${passwordErrors.join(", ")}`;
+
+    if (!signUpName.trim()) {
+      errors.name = 'Name required';
     }
-    if (Object.keys(errors).length) {
+
+    if (!signUpEmail.trim()) {
+      errors.email = 'Email required';
+    } else if (!validateEmail(signUpEmail)) {
+      errors.email = 'Enter valid email';
+    }
+
+    if (!signUpPhone.trim()) {
+      errors.phone = 'Mobile number required';
+    } else if (!validatePhone(signUpPhone)) {
+      errors.phone = 'Enter valid 10-digit mobile number';
+    }
+
+    if (!signUpPassword.trim()) {
+      errors.password = 'Password required';
+    } else {
+      const passwordErrors = validatePassword(signUpPassword);
+      if (passwordErrors.length > 0) {
+        errors.password = `Password must have: ${passwordErrors.join(', ')}`;
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
       setSignUpErrors(errors);
       return;
     }
+
     try {
       setSignUpLoading(true);
       setSignUpErrors({});
-      const response = await API.post("/users/register", {
+
+      const response = await API.post('/users/register', {
         name: signUpName,
         email: signUpEmail,
         mobile: signUpPhone,
         password: signUpPassword,
       });
-      if (response?.data?.email) setSignUpEmail(response.data.email);
-      setSignUpStep("otp");
+
+      if (response?.data?.email) {
+        setSignUpEmail(response.data.email);
+      }
+
+      setSignUpStep('otp');
     } catch (error) {
-      setSignUpErrors({ api: getErrorMessage(error, "Unable to create account.") });
+      setSignUpErrors({ api: getErrorMessage(error, 'Unable to create account.') });
     } finally {
       setSignUpLoading(false);
     }
@@ -265,29 +401,39 @@ export default function AuthPage() {
 
   const handleSignUpOtpSubmit = async () => {
     const errors = {};
-    if (!signUpOtp.trim()) errors.otp = "OTP required";
-    else if (!validateOtp(signUpOtp)) errors.otp = "OTP must be 6 digits";
-    if (Object.keys(errors).length) {
+
+    if (!signUpOtp.trim()) {
+      errors.otp = 'OTP required';
+    } else if (!validateOtp(signUpOtp)) {
+      errors.otp = 'OTP must be 6 digits';
+    }
+
+    if (Object.keys(errors).length > 0) {
       setSignUpErrors(errors);
       return;
     }
+
     try {
       setSignUpLoading(true);
       setSignUpErrors({});
-      const response = await API.post("/users/verify-signup-otp", {
+
+      const response = await API.post('/users/verify-signup-otp', {
         email: signUpEmail,
         otp: signUpOtp,
       });
-      saveAuthData(response.data);
+
+      saveAuthData(response.data, true);
       setSignUpSuccess(true);
+
       const user =
         response?.data?.user ||
         response?.data?.data?.user ||
         response?.data?.result?.user ||
         null;
-      setTimeout(() => redirectAfterLogin(user), 1000);
+
+      setTimeout(() => redirectUser(user), 1000);
     } catch (error) {
-      setSignUpErrors({ api: getErrorMessage(error, "OTP verification failed.") });
+      setSignUpErrors({ api: getErrorMessage(error, 'OTP verification failed.') });
     } finally {
       setSignUpLoading(false);
     }
@@ -297,426 +443,868 @@ export default function AuthPage() {
     try {
       setSignUpLoading(true);
       setSignUpErrors({});
-      await API.post("/users/resend-signup-otp", { email: signUpEmail });
-      setSignUpErrors({ api: "OTP resent successfully. Please check your email." });
+      await API.post('/users/resend-signup-otp', { email: signUpEmail });
+      setSignUpErrors({ api: 'OTP resent successfully. Please check your email.' });
     } catch (error) {
-      setSignUpErrors({ api: getErrorMessage(error, "Unable to resend OTP.") });
+      setSignUpErrors({ api: getErrorMessage(error, 'Unable to resend OTP.') });
     } finally {
       setSignUpLoading(false);
     }
   };
 
+  const resetSignUp = () => {
+    setSignUpName('');
+    setSignUpEmail('');
+    setSignUpPhone('');
+    setSignUpPassword('');
+    setSignUpOtp('');
+    setSignUpStep('details');
+    setSignUpSuccess(false);
+    setSignUpErrors({});
+    setSignUpLoading(false);
+  };
+
+  const GoogleButton = ({ buttonKey }) => (
+    <div className="space-y-2">
+      <div className="relative">
+        <button
+          type="button"
+          disabled={!googleClientId || googleLoading}
+          className="w-full border-2 border-gray-300 text-gray-700 font-semibold py-3 rounded-lg hover:bg-gray-50 transition-all text-sm flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          <GoogleIcon />
+          {googleLoading ? 'Connecting to Google...' : 'Continue with Google'}
+        </button>
+        <div
+          ref={(node) => {
+            googleButtonRefs.current[buttonKey] = node;
+          }}
+          className="absolute inset-0 overflow-hidden rounded-lg opacity-0"
+          aria-hidden="true"
+        />
+      </div>
+      {!googleClientId && (
+        <p className="text-xs text-amber-600">
+          Add <code>NEXT_PUBLIC_GOOGLE_CLIENT_ID</code> to enable Google sign-in.
+        </p>
+      )}
+    </div>
+  );
+
   return (
     <>
+      <Script
+        src="https://accounts.google.com/gsi/client"
+        strategy="afterInteractive"
+        onLoad={() => setGoogleScriptLoaded(true)}
+      />
       <Navbar />
-      <div className="min-h-screen bg-linear-to-b from-slate-50 to-white flex pt-20">
-        <div className="w-full lg:w-1/2 flex items-center justify-center px-6 sm:px-8 py-8 sm:py-12">
-          <div className="w-full max-w-md">
-            <div className="mb-8 sm:mb-10">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-lg flex items-center justify-center">
-                  <Leaf className="w-6 h-6 text-white" />
+
+      <div className="flex flex-col min-h-[calc(100vh-80px)]">
+        <div className="lg:hidden flex-1 relative pb-20 pt-16">
+          <div className="absolute inset-0 top-0 h-64 bg-linear-to-b from-green-300 via-emerald-200 to-white opacity-80"></div>
+
+          <div className="relative z-10 px-4 py-12 flex flex-col items-center">
+            <div className="mb-6 text-center w-full">
+              <img
+                src="/Spiruboost_Logo.png"
+                alt="Spiruboost Logo"
+                className="h-16 w-auto mx-auto mb-2"
+              />
+              <p className="text-gray-600 text-sm font-medium">Enter into the world of wellness</p>
+            </div>
+
+            <div
+              className={`w-full transition-all duration-300 ${
+                mode === 'signup' ? 'max-w-lg' : 'max-w-sm'
+              } bg-white rounded-3xl shadow-lg p-6 sm:p-8 mx-auto`}
+            >
+              <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+                {mode === 'signin' ? 'Login to Spiruboost' : 'Join Spiruboost'}
+              </h2>
+
+              {mode === 'signin' && (
+                <div className="flex gap-4 mb-8">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode('signin');
+                      resetSignIn();
+                    }}
+                    className="flex-1 py-2 font-semibold text-sm transition-all text-green-700 border-b-2 border-green-600"
+                  >
+                    Sign In
+                  </button>
                 </div>
-                <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
-                  Spirulina Lab
-                </h1>
+              )}
+
+              {mode === 'signin' && (
+                <div className="space-y-4">
+                  {signInErrors.api && <p className="text-red-500 text-sm">{signInErrors.api}</p>}
+
+                  {signInStep === 'credentials' && (
+                    <>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 block mb-2">Email Address</label>
+                        <input
+                          type="text"
+                          value={signInEmail}
+                          onChange={(e) => setSignInEmail(e.target.value)}
+                          placeholder="your@email.com"
+                          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
+                        />
+                        {signInErrors.email && (
+                          <p className="text-red-500 text-xs mt-1">{signInErrors.email}</p>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={handleSignInNext}
+                        disabled={signInLoading}
+                        className="w-full bg-green-600 text-white font-bold py-2.5 rounded-lg hover:bg-green-700 transition-all text-sm mt-4 disabled:opacity-50"
+                      >
+                        {signInLoading ? 'Please wait...' : 'Continue'}
+                      </button>
+
+                      <div className="relative my-4">
+                        <div className="absolute inset-0 flex items-center">
+                          <div className="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                          <span className="px-2 bg-white text-gray-500">Or</span>
+                        </div>
+                      </div>
+
+                      <GoogleButton buttonKey="signin-mobile" />
+                    </>
+                  )}
+
+                  {signInStep === 'authmethod' && (
+                    <>
+                      <p className="text-sm text-gray-600 text-center mb-4">Choose authentication method</p>
+                      <button
+                        onClick={() => handleAuthMethodSelect('password')}
+                        disabled={signInLoading}
+                        className="w-full border-2 border-green-600 text-green-600 font-semibold py-2.5 rounded-lg hover:bg-green-50 transition-all text-sm disabled:opacity-50"
+                      >
+                        Use Password
+                      </button>
+                      <button
+                        onClick={() => handleAuthMethodSelect('otp')}
+                        disabled={signInLoading}
+                        className="w-full border-2 border-green-600 text-green-600 font-semibold py-2.5 rounded-lg hover:bg-green-50 transition-all text-sm disabled:opacity-50"
+                      >
+                        {signInLoading ? 'Sending OTP...' : 'Use OTP'}
+                      </button>
+                      <button
+                        onClick={() => setSignInStep('credentials')}
+                        className="w-full text-gray-600 py-2 text-sm hover:text-gray-800"
+                      >
+                        Back
+                      </button>
+                    </>
+                  )}
+
+                  {signInStep === 'password' && (
+                    <>
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-sm font-medium text-gray-700">Password</label>
+                          <button
+                            onClick={handleForgotPassword}
+                            disabled={signInLoading}
+                            className="text-xs text-green-600 hover:text-green-700 font-semibold disabled:opacity-50"
+                          >
+                            Forgot?
+                          </button>
+                        </div>
+                        <div className="relative">
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            value={signInPassword}
+                            onChange={(e) => setSignInPassword(e.target.value)}
+                            placeholder="••••••••"
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                          >
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        {signInErrors.password && (
+                          <p className="text-red-500 text-xs mt-1">{signInErrors.password}</p>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="remember-mobile"
+                          checked={rememberMe}
+                          onChange={(e) => setRememberMe(e.target.checked)}
+                          className="w-4 h-4 accent-green-600 rounded"
+                        />
+                        <label htmlFor="remember-mobile" className="text-sm text-gray-700">Remember me</label>
+                      </div>
+
+                      <button
+                        onClick={handlePasswordSubmit}
+                        disabled={signInSuccess || signInLoading}
+                        className="w-full bg-green-600 text-white font-bold py-2.5 rounded-lg hover:bg-green-700 transition-all text-sm disabled:opacity-50 mt-4"
+                      >
+                        {signInLoading ? 'Please wait...' : signInSuccess ? '✓ Welcome!' : 'Log In'}
+                      </button>
+
+                      <button
+                        onClick={() => setSignInStep('authmethod')}
+                        className="w-full text-gray-600 py-2 text-sm hover:text-gray-800"
+                      >
+                        Back
+                      </button>
+                    </>
+                  )}
+
+                  {signInStep === 'otp' && (
+                    <>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 block mb-2">OTP Verification</label>
+                        <input
+                          type="text"
+                          value={signInOtp}
+                          onChange={(e) => setSignInOtp(e.target.value.slice(0, 6))}
+                          placeholder="000000"
+                          maxLength="6"
+                          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-center text-lg tracking-widest"
+                        />
+                        <p className="text-gray-500 text-xs mt-2 text-center">6-digit code sent to your email</p>
+                        {signInErrors.otp && (
+                          <p className="text-red-500 text-xs mt-1">{signInErrors.otp}</p>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={handleSignInOtpSubmit}
+                        disabled={signInSuccess || signInLoading}
+                        className="w-full bg-green-600 text-white font-bold py-2.5 rounded-lg hover:bg-green-700 transition-all text-sm disabled:opacity-50 mt-4"
+                      >
+                        {signInLoading ? 'Verifying...' : signInSuccess ? '✓ Verified!' : 'Verify'}
+                      </button>
+
+                      <button
+                        onClick={() => setSignInStep('authmethod')}
+                        className="w-full text-gray-600 py-2 text-sm hover:text-gray-800"
+                      >
+                        Back
+                      </button>
+                    </>
+                  )}
+
+                  <p className="text-center text-sm text-gray-600 mt-4">
+                    Don't have an account?{' '}
+                    <button
+                      onClick={() => {
+                        setMode('signup');
+                        resetSignUp();
+                      }}
+                      className="text-green-600 font-semibold hover:text-green-700"
+                    >
+                      Sign Up
+                    </button>
+                  </p>
+                </div>
+              )}
+
+              {mode === 'signup' && (
+                <div className="space-y-4">
+                  {signUpErrors.api && <p className="text-red-500 text-sm">{signUpErrors.api}</p>}
+
+                  {signUpStep === 'details' && (
+                    <>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 block mb-2">Full Name</label>
+                        <input
+                          type="text"
+                          value={signUpName}
+                          onChange={(e) => setSignUpName(e.target.value)}
+                          placeholder="Your name"
+                          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
+                        />
+                        {signUpErrors.name && (
+                          <p className="text-red-500 text-xs mt-1">{signUpErrors.name}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 block mb-2">Email Address</label>
+                        <input
+                          type="email"
+                          value={signUpEmail}
+                          onChange={(e) => setSignUpEmail(e.target.value)}
+                          placeholder="your@email.com"
+                          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
+                        />
+                        {signUpErrors.email && (
+                          <p className="text-red-500 text-xs mt-1">{signUpErrors.email}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 block mb-2">Mobile Number</label>
+                        <input
+                          type="tel"
+                          value={signUpPhone}
+                          onChange={(e) => setSignUpPhone(e.target.value)}
+                          placeholder="9876543210"
+                          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
+                        />
+                        {signUpErrors.phone && (
+                          <p className="text-red-500 text-xs mt-1">{signUpErrors.phone}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 block mb-2">Password</label>
+                        <div className="relative">
+                          <input
+                            type={showSignUpPassword ? 'text' : 'password'}
+                            value={signUpPassword}
+                            onChange={(e) => setSignUpPassword(e.target.value)}
+                            placeholder="••••••••"
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowSignUpPassword(!showSignUpPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                          >
+                            {showSignUpPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        {signUpPassword && (
+                          <div className="mt-1">
+                            {validatePassword(signUpPassword).length > 0 ? (
+                              <p className="text-orange-500 text-xs">
+                                Password needs: {validatePassword(signUpPassword).join(', ')}
+                              </p>
+                            ) : (
+                              <p className="text-green-500 text-xs">✓ Strong password</p>
+                            )}
+                          </div>
+                        )}
+                        {signUpErrors.password && (
+                          <p className="text-red-500 text-xs mt-1">{signUpErrors.password}</p>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={handleSignUpDetailsSubmit}
+                        disabled={signUpLoading}
+                        className="w-full bg-green-600 text-white font-bold py-2.5 rounded-lg hover:bg-green-700 transition-all text-sm mt-4 disabled:opacity-50"
+                      >
+                        {signUpLoading ? 'Please wait...' : 'Continue to Verification'}
+                      </button>
+
+                      <div className="relative my-4">
+                        <div className="absolute inset-0 flex items-center">
+                          <div className="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                          <span className="px-2 bg-white text-gray-500">Or</span>
+                        </div>
+                      </div>
+
+                      <GoogleButton buttonKey="signup-mobile" />
+
+                      <p className="text-center text-sm text-gray-600 mt-4">
+                        Already have an account?{' '}
+                        <button
+                          onClick={() => {
+                            setMode('signin');
+                            resetSignIn();
+                          }}
+                          className="text-green-600 font-semibold hover:text-green-700"
+                        >
+                          Sign In
+                        </button>
+                      </p>
+                    </>
+                  )}
+
+                  {signUpStep === 'otp' && (
+                    <>
+                      <div className="bg-green-50 border border-green-300 rounded-lg p-3 mb-4">
+                        <p className="text-sm text-green-800">
+                          6-digit OTP sent to your email
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 block mb-2">Verify OTP</label>
+                        <input
+                          type="text"
+                          value={signUpOtp}
+                          onChange={(e) => setSignUpOtp(e.target.value.slice(0, 6))}
+                          placeholder="000000"
+                          maxLength="6"
+                          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-center text-lg tracking-widest"
+                        />
+                        {signUpErrors.otp && (
+                          <p className="text-red-500 text-xs mt-1">{signUpErrors.otp}</p>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={handleSignUpOtpSubmit}
+                        disabled={signUpSuccess || signUpLoading}
+                        className="w-full bg-green-600 text-white font-bold py-2.5 rounded-lg hover:bg-green-700 transition-all text-sm disabled:opacity-50 mt-4"
+                      >
+                        {signUpLoading ? 'Verifying...' : signUpSuccess ? '✓ Welcome!' : 'Complete Sign Up'}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleResendSignupOtp}
+                        disabled={signUpLoading}
+                        className="w-full text-green-600 font-medium py-2 text-sm hover:text-green-700 disabled:opacity-50"
+                      >
+                        Resend OTP
+                      </button>
+
+                      <button
+                        onClick={() => setSignUpStep('details')}
+                        className="w-full text-gray-600 py-2 text-sm hover:text-gray-800"
+                      >
+                        Back
+                      </button>
+
+                      <p className="text-center text-sm text-gray-600 mt-4">
+                        Already have an account?{' '}
+                        <button
+                          onClick={() => {
+                            setMode('signin');
+                            resetSignIn();
+                          }}
+                          className="text-green-600 font-semibold hover:text-green-700"
+                        >
+                          Sign In
+                        </button>
+                      </p>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="hidden lg:flex flex-1 relative bg-cover bg-center items-center justify-center px-8 py-24 mt-8"
+          style={{
+            backgroundImage: 'url(/login_hero.png)',
+            backgroundAttachment: 'fixed',
+            minHeight: 'calc(100vh - 80px)',
+          }}
+        >
+          <div className="absolute inset-0 bg-black/40"></div>
+
+          <div
+            className={`relative z-10 w-full transition-all duration-300 bg-white rounded-2xl shadow-2xl p-8 md:p-12 ${
+              mode === 'signup' ? 'max-w-xl' : 'max-w-md'
+            }`}
+          >
+            <div className="mb-8 text-center">
+              <img
+                src="/Spiruboost_Logo.png"
+                alt="Spiruboost Logo"
+                className="h-16 w-auto mx-auto mb-3"
+              />
+              <p className="text-gray-600 text-sm font-medium">Enter into the world of wellness</p>
+            </div>
+
+            <h2 className="text-3xl font-bold text-center text-gray-800 mb-8 transition-all duration-300">
+              {mode === 'signin' ? 'Welcome Back' : 'Create Account'}
+            </h2>
+
+            {mode === 'signin' && (
+              <div className="flex gap-4 mb-8 border-b border-gray-300">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode('signin');
+                    resetSignIn();
+                  }}
+                  className="flex-1 py-3 font-semibold text-sm transition-all border-b-2 text-green-700 border-green-600"
+                >
+                  Sign In
+                </button>
               </div>
-              <p className="text-gray-500 text-sm sm:text-base font-light italic">
-                The Living Laboratory
-              </p>
-            </div>
+            )}
 
-            <div className="flex gap-1 mb-8 border-b border-gray-200">
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("signin");
-                  resetSignIn();
-                }}
-                className={`px-4 py-3 font-semibold text-sm transition-all duration-300 relative cursor-pointer ${
-                  mode === "signin" ? "text-teal-600" : "text-gray-500"
-                }`}
-              >
-                Sign In
-                {mode === "signin" && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("signup");
-                  resetSignUp();
-                }}
-                className={`px-4 py-3 font-semibold text-sm transition-all duration-300 relative cursor-pointer ${
-                  mode === "signup" ? "text-teal-600" : "text-gray-500"
-                }`}
-              >
-                Sign Up
-                {mode === "signup" && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-teal-500 to-emerald-500"></div>
-                )}
-              </button>
-            </div>
-
-            {mode === "signin" && (
-              <div className="space-y-6">
+            {mode === 'signin' && (
+              <div className="space-y-5">
                 {signInErrors.api && <p className="text-red-500 text-sm">{signInErrors.api}</p>}
 
-                {signInStep === "credentials" && (
+                {signInStep === 'credentials' && (
                   <>
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-                        Email Address or Mobile
-                      </label>
+                      <label className="text-sm font-medium text-gray-700 block mb-2">Email Address</label>
                       <input
                         type="text"
                         value={signInEmail}
                         onChange={(e) => setSignInEmail(e.target.value)}
-                        placeholder="name@laboratory.com or 9876543210"
-                        className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-teal-500 focus:bg-white transition-all duration-300 text-sm"
+                        placeholder="your@email.com"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                       />
                       {signInErrors.email && (
-                        <p className="text-red-500 text-xs mt-2">{signInErrors.email}</p>
+                        <p className="text-red-500 text-xs mt-1">{signInErrors.email}</p>
                       )}
                     </div>
 
                     <button
                       onClick={handleSignInNext}
                       disabled={signInLoading}
-                      className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white font-semibold py-3 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
+                      className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-all text-sm disabled:opacity-50"
                     >
-                      {signInLoading ? "Please wait..." : "Continue"}
+                      {signInLoading ? 'Please wait...' : 'Continue'}
                     </button>
+
+                    <div className="relative my-4">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-300"></div>
+                      </div>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-white text-gray-500">Or</span>
+                      </div>
+                    </div>
+
+                    <GoogleButton buttonKey="signin-web" />
                   </>
                 )}
 
-                {signInStep === "authmethod" && (
+                {signInStep === 'authmethod' && (
                   <>
-                    <div className="space-y-4">
-                      <p className="text-gray-600 text-sm">
-                        Choose your authentication method for{" "}
-                        <span className="font-semibold text-gray-800">{signInEmail}</span>
-                      </p>
-                      <button
-                        onClick={() => handleAuthMethodSelect("password")}
-                        disabled={signInLoading}
-                        className="w-full border-2 border-teal-500 text-teal-600 font-semibold py-3 rounded-lg hover:bg-teal-50 transition-all duration-300 disabled:opacity-50"
-                      >
-                        <Lock className="w-5 h-5 inline mr-2" />
-                        Use Password
-                      </button>
-                      <button
-                        onClick={() => handleAuthMethodSelect("otp")}
-                        disabled={signInLoading}
-                        className="w-full border-2 border-emerald-500 text-emerald-600 font-semibold py-3 rounded-lg hover:bg-emerald-50 transition-all duration-300 disabled:opacity-50"
-                      >
-                        <Mail className="w-5 h-5 inline mr-2" />
-                        {signInLoading ? "Sending OTP..." : "Use OTP"}
-                      </button>
-                    </div>
-
+                    <p className="text-sm text-gray-600 text-center mb-4">Choose authentication method</p>
                     <button
-                      onClick={() => setSignInStep("credentials")}
-                      className="w-full text-gray-600 font-medium py-2 hover:text-gray-800 transition-colors"
+                      onClick={() => handleAuthMethodSelect('password')}
+                      disabled={signInLoading}
+                      className="w-full border-2 border-green-600 text-green-600 font-semibold py-3 rounded-lg hover:bg-green-50 transition-all text-sm disabled:opacity-50"
+                    >
+                      Use Password
+                    </button>
+                    <button
+                      onClick={() => handleAuthMethodSelect('otp')}
+                      disabled={signInLoading}
+                      className="w-full border-2 border-green-600 text-green-600 font-semibold py-3 rounded-lg hover:bg-green-50 transition-all text-sm disabled:opacity-50"
+                    >
+                      {signInLoading ? 'Sending OTP...' : 'Use OTP'}
+                    </button>
+                    <button
+                      onClick={() => setSignInStep('credentials')}
+                      className="w-full text-gray-600 py-2 text-sm hover:text-gray-800"
                     >
                       Back
                     </button>
                   </>
                 )}
 
-                {signInStep === "password" && (
+                {signInStep === 'password' && (
                   <>
                     <div>
-                      <div className="flex justify-between items-center mb-3">
-                        <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                          Password
-                        </label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-sm font-medium text-gray-700">Password</label>
                         <button
                           onClick={handleForgotPassword}
                           disabled={signInLoading}
-                          className="text-xs text-teal-600 hover:text-teal-700 font-semibold disabled:opacity-50"
+                          className="text-xs text-green-600 hover:text-green-700 font-semibold disabled:opacity-50"
                         >
                           Forgot?
                         </button>
                       </div>
                       <div className="relative">
                         <input
-                          type={showPassword ? "text" : "password"}
+                          type={showPassword ? 'text' : 'password'}
                           value={signInPassword}
                           onChange={(e) => setSignInPassword(e.target.value)}
                           placeholder="••••••••"
-                          className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-teal-500 focus:bg-white transition-all duration-300 text-sm"
+                          className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                         >
-                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                       </div>
                       {signInErrors.password && (
-                        <p className="text-red-500 text-xs mt-2">{signInErrors.password}</p>
+                        <p className="text-red-500 text-xs mt-1">{signInErrors.password}</p>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
                         id="remember"
                         checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
-                        className="w-5 h-5 accent-teal-500 rounded cursor-pointer"
+                        className="w-4 h-4 accent-green-600 rounded"
                       />
-                      <label htmlFor="remember" className="text-sm text-gray-700 cursor-pointer">
-                        Stay connected to this lab
-                      </label>
+                      <label htmlFor="remember" className="text-sm text-gray-700">Remember me</label>
                     </div>
 
                     <button
                       onClick={handlePasswordSubmit}
                       disabled={signInSuccess || signInLoading}
-                      className="w-full bg-linear-to-r from-teal-500 to-emerald-600 text-white font-semibold py-3 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
+                      className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-all text-sm disabled:opacity-50"
                     >
-                      {signInLoading ? "Please wait..." : signInSuccess ? "✓ Welcome!" : "Enter Laboratory"}
+                      {signInLoading ? 'Please wait...' : signInSuccess ? '✓ Welcome!' : 'Log In'}
                     </button>
 
                     <button
-                      onClick={() => setSignInStep("authmethod")}
-                      className="w-full text-gray-600 font-medium py-2 hover:text-gray-800 transition-colors"
+                      onClick={() => setSignInStep('authmethod')}
+                      className="w-full text-gray-600 py-2 text-sm hover:text-gray-800"
                     >
                       Back
                     </button>
                   </>
                 )}
 
-                {signInStep === "otp" && authMethod === "otp" && (
+                {signInStep === 'otp' && (
                   <>
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-                        OTP Verification
-                      </label>
+                      <label className="text-sm font-medium text-gray-700 block mb-2">OTP Verification</label>
                       <input
                         type="text"
                         value={signInOtp}
                         onChange={(e) => setSignInOtp(e.target.value.slice(0, 6))}
                         placeholder="000000"
                         maxLength="6"
-                        className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-teal-500 focus:bg-white transition-all duration-300 text-sm tracking-widest text-center text-lg"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-center text-lg tracking-widest"
                       />
-                      <p className="text-gray-500 text-xs mt-2 text-center">
-                        Enter the 6-digit code sent to your registered email
-                      </p>
+                      <p className="text-gray-500 text-xs mt-2 text-center">6-digit code sent to your email</p>
                       {signInErrors.otp && (
-                        <p className="text-red-500 text-xs mt-2">{signInErrors.otp}</p>
+                        <p className="text-red-500 text-xs mt-1">{signInErrors.otp}</p>
                       )}
                     </div>
 
                     <button
                       onClick={handleSignInOtpSubmit}
                       disabled={signInSuccess || signInLoading}
-                      className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white font-semibold py-3 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
+                      className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-all text-sm disabled:opacity-50"
                     >
-                      {signInLoading ? "Verifying..." : signInSuccess ? "✓ Verified!" : "Verify & Enter Laboratory"}
+                      {signInLoading ? 'Verifying...' : signInSuccess ? '✓ Verified!' : 'Verify'}
                     </button>
 
                     <button
-                      onClick={() => setSignInStep("authmethod")}
-                      className="w-full text-gray-600 font-medium py-2 hover:text-gray-800 transition-colors"
+                      onClick={() => setSignInStep('authmethod')}
+                      className="w-full text-gray-600 py-2 text-sm hover:text-gray-800"
                     >
                       Back
                     </button>
                   </>
                 )}
+
+                <p className="text-center text-sm text-gray-600 mt-6">
+                  Don't have an account?{' '}
+                  <button
+                    onClick={() => {
+                      setMode('signup');
+                      resetSignUp();
+                    }}
+                    className="text-green-600 font-semibold hover:text-green-700"
+                  >
+                    Sign Up
+                  </button>
+                </p>
               </div>
             )}
 
-            {mode === "signup" && (
-              <div className="space-y-6">
+            {mode === 'signup' && (
+              <div className="space-y-5">
                 {signUpErrors.api && <p className="text-red-500 text-sm">{signUpErrors.api}</p>}
 
-                {signUpStep === "details" && (
+                {signUpStep === 'details' && (
                   <>
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-                        Full Name
-                      </label>
+                      <label className="text-sm font-medium text-gray-700 block mb-2">Full Name</label>
                       <input
                         type="text"
                         value={signUpName}
                         onChange={(e) => setSignUpName(e.target.value)}
                         placeholder="Your name"
-                        className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-teal-500 focus:bg-white transition-all duration-300 text-sm"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                       />
                       {signUpErrors.name && (
-                        <p className="text-red-500 text-xs mt-2">{signUpErrors.name}</p>
+                        <p className="text-red-500 text-xs mt-1">{signUpErrors.name}</p>
                       )}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-                        Email Address
-                      </label>
+                      <label className="text-sm font-medium text-gray-700 block mb-2">Email Address</label>
                       <input
                         type="email"
                         value={signUpEmail}
                         onChange={(e) => setSignUpEmail(e.target.value)}
-                        placeholder="name@laboratory.com"
-                        className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-teal-500 focus:bg-white transition-all duration-300 text-sm"
+                        placeholder="your@email.com"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                       />
                       {signUpErrors.email && (
-                        <p className="text-red-500 text-xs mt-2">{signUpErrors.email}</p>
+                        <p className="text-red-500 text-xs mt-1">{signUpErrors.email}</p>
                       )}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-                        Mobile Number
-                      </label>
+                      <label className="text-sm font-medium text-gray-700 block mb-2">Mobile Number</label>
                       <input
                         type="tel"
                         value={signUpPhone}
                         onChange={(e) => setSignUpPhone(e.target.value)}
                         placeholder="9876543210"
-                        className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-teal-500 focus:bg-white transition-all duration-300 text-sm"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                       />
                       {signUpErrors.phone && (
-                        <p className="text-red-500 text-xs mt-2">{signUpErrors.phone}</p>
+                        <p className="text-red-500 text-xs mt-1">{signUpErrors.phone}</p>
                       )}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-                        Password
-                      </label>
+                      <label className="text-sm font-medium text-gray-700 block mb-2">Password</label>
                       <div className="relative">
                         <input
-                          type={showSignUpPassword ? "text" : "password"}
+                          type={showSignUpPassword ? 'text' : 'password'}
                           value={signUpPassword}
                           onChange={(e) => setSignUpPassword(e.target.value)}
                           placeholder="••••••••"
-                          className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-teal-500 focus:bg-white transition-all duration-300 text-sm"
+                          className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                         />
                         <button
                           type="button"
                           onClick={() => setShowSignUpPassword(!showSignUpPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                         >
-                          {showSignUpPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                          {showSignUpPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                       </div>
                       {signUpPassword && (
-                        <div className="mt-2 space-y-1">
-                          {validatePassword(signUpPassword).length > 0 && (
+                        <div className="mt-1">
+                          {validatePassword(signUpPassword).length > 0 ? (
                             <p className="text-orange-500 text-xs">
-                              Password needs: {validatePassword(signUpPassword).join(", ")}
+                              Password needs: {validatePassword(signUpPassword).join(', ')}
                             </p>
-                          )}
-                          {validatePassword(signUpPassword).length === 0 && (
+                          ) : (
                             <p className="text-green-500 text-xs">✓ Strong password</p>
                           )}
                         </div>
                       )}
                       {signUpErrors.password && (
-                        <p className="text-red-500 text-xs mt-2">{signUpErrors.password}</p>
+                        <p className="text-red-500 text-xs mt-1">{signUpErrors.password}</p>
                       )}
                     </div>
 
                     <button
                       onClick={handleSignUpDetailsSubmit}
                       disabled={signUpLoading}
-                      className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white font-semibold py-3 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
+                      className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-all text-sm disabled:opacity-50"
                     >
-                      {signUpLoading ? "Please wait..." : "Continue to Verification"}
+                      {signUpLoading ? 'Please wait...' : 'Continue to Verification'}
                     </button>
+
+                    <div className="relative my-4">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-300"></div>
+                      </div>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-white text-gray-500">Or</span>
+                      </div>
+                    </div>
+
+                    <GoogleButton buttonKey="signup-web" />
+
+                    <p className="text-center text-sm text-gray-600 mt-6">
+                      Already have an account?{' '}
+                      <button
+                        onClick={() => {
+                          setMode('signin');
+                          resetSignIn();
+                        }}
+                        className="text-green-600 font-semibold hover:text-green-700"
+                      >
+                        Sign In
+                      </button>
+                    </p>
                   </>
                 )}
 
-                {signUpStep === "otp" && (
+                {signUpStep === 'otp' && (
                   <>
-                    <div className="bg-teal-50 border-l-4 border-teal-500 p-4 rounded mb-6">
-                      <p className="text-sm text-teal-800">
-                        A 6-digit OTP has been sent to your email:{" "}
-                        <span className="font-semibold">{signUpEmail}</span>
+                    <div className="bg-green-50 border border-green-300 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-green-800">
+                        6-digit OTP sent to your email
                       </p>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-                        OTP Verification
-                      </label>
+                      <label className="text-sm font-medium text-gray-700 block mb-2">Verify OTP</label>
                       <input
                         type="text"
                         value={signUpOtp}
                         onChange={(e) => setSignUpOtp(e.target.value.slice(0, 6))}
                         placeholder="000000"
                         maxLength="6"
-                        className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-teal-500 focus:bg-white transition-all duration-300 text-sm tracking-widest text-center text-lg"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-center text-lg tracking-widest"
                       />
                       {signUpErrors.otp && (
-                        <p className="text-red-500 text-xs mt-2">{signUpErrors.otp}</p>
+                        <p className="text-red-500 text-xs mt-1">{signUpErrors.otp}</p>
                       )}
                     </div>
 
                     <button
                       onClick={handleSignUpOtpSubmit}
                       disabled={signUpSuccess || signUpLoading}
-                      className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white font-semibold py-3 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
+                      className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-all text-sm disabled:opacity-50"
                     >
-                      {signUpLoading ? "Verifying..." : signUpSuccess ? "✓ Welcome!" : "Complete Sign Up"}
+                      {signUpLoading ? 'Verifying...' : signUpSuccess ? '✓ Welcome!' : 'Complete Sign Up'}
                     </button>
 
                     <button
                       type="button"
                       onClick={handleResendSignupOtp}
                       disabled={signUpLoading}
-                      className="w-full text-teal-600 font-medium py-2 hover:text-teal-700 transition-colors disabled:opacity-50"
+                      className="w-full text-green-600 font-medium py-2 text-sm hover:text-green-700 disabled:opacity-50"
                     >
                       Resend OTP
                     </button>
 
                     <button
-                      onClick={() => setSignUpStep("details")}
-                      className="w-full text-gray-600 font-medium py-2 hover:text-gray-800 transition-colors"
+                      onClick={() => setSignUpStep('details')}
+                      className="w-full text-gray-600 py-2 text-sm hover:text-gray-800"
                     >
                       Back
                     </button>
+
+                    <p className="text-center text-sm text-gray-600 mt-6">
+                      Already have an account?{' '}
+                      <button
+                        onClick={() => {
+                          setMode('signin');
+                          resetSignIn();
+                        }}
+                        className="text-green-600 font-semibold hover:text-green-700"
+                      >
+                        Sign In
+                      </button>
+                    </p>
                   </>
                 )}
               </div>
             )}
-
-            <div className="mt-8 pt-6 border-t border-gray-200 text-center text-xs text-gray-500">
-              <p>© 2024 Spirulina Lab. All rights reserved.</p>
-            </div>
           </div>
-        </div>
-
-        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-teal-600 via-emerald-600 to-teal-700">
-          <img
-            src="/auth-hero.jpg"
-            alt="Spirulina Laboratory"
-            className="w-full h-full object-cover opacity-90"
-          />
-
-          <div className="absolute bottom-8 right-8 bg-white bg-opacity-95 backdrop-blur-sm rounded-2xl p-6 max-w-sm shadow-2xl">
-            <div className="flex items-start gap-3 mb-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <Leaf className="w-5 h-5 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800">
-                Purity in every <span className="italic text-teal-600">particle</span>
-              </h3>
-            </div>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              Join a community of 50,000+ biohackers and wellness enthusiasts optimizing their life with microscopic precision.
-            </p>
-          </div>
-
-          <div className="absolute inset-0 bg-linear-to-t from-teal-900 via-transparent to-transparent opacity-40"></div>
         </div>
       </div>
+
       <Footer />
     </>
   );

@@ -162,6 +162,19 @@ function UserDashboardContent() {
     })
   }
 
+  const formatOrderAddress = (address = {}) => {
+    return [
+      address.address1,
+      address.address2,
+      address.landmark,
+      address.city,
+      address.state,
+      address.pincode,
+    ]
+      .filter(Boolean)
+      .join(", ")
+  }
+
   const fetchProfile = async () => {
     try {
       setLoading(true)
@@ -186,6 +199,8 @@ function UserDashboardContent() {
       const mappedOrders = (data.orders || []).map((order) => ({
         ...order,
         id: order._id,
+        displayId: order.orderNumber || order._id,
+        addressText: formatOrderAddress(order.shippingAddress || {}),
         date: order.createdAt
           ? new Date(order.createdAt).toLocaleDateString("en-IN", {
               day: "2-digit",
@@ -735,14 +750,19 @@ function UserDashboardContent() {
 
         {activeTab === "orders" && (
           <section className="w-full bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300">
-            <div className="px-6 md:px-8 py-5 border-b border-gray-100" style={{ background: "#f8f9fa" }}>
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "#e3f2fd" }}>
-                  <Package className="h-5 w-5" style={{ color: "#1976d2" }} />
+            <div className="px-6 md:px-8 py-6 border-b border-gray-100" style={{ background: "#f8f9fa" }}>
+              <div className="flex items-start gap-3">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: "#fff4e5" }}>
+                  <Package className="h-5 w-5" style={{ color: "#d97706" }} />
                 </div>
-                <h2 className="text-xl font-bold" style={{ color: "#000000" }}>
-                  My Orders
-                </h2>
+                <div>
+                  <h2 className="text-2xl font-bold" style={{ color: "#000000" }}>
+                    Your Orders
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {orders.length} order{orders.length === 1 ? "" : "s"} found
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -753,80 +773,103 @@ function UserDashboardContent() {
                   <p className="text-gray-500">No orders found yet.</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                   {orders.map((order) => {
-                    const shouldShowCourierBlock = Boolean(order.awbCode || order.trackingUrl)
-                    const shouldShowTrackButton = Boolean(
-                      order.trackingUrl ||
+                    const shouldShowCourierBlock = Boolean(
+                      order.shiprocketShipmentId ||
                         order.awbCode ||
-                        order.shipmentStatus === "in_transit" ||
+                        order.trackingUrl ||
+                        order.shipmentStatus === "created" ||
                         order.shipmentStatus === "awb_assigned" ||
-                        order.shipmentStatus === "pickup_scheduled"
+                        order.shipmentStatus === "pickup_scheduled" ||
+                        order.shipmentStatus === "in_transit"
+                    )
+                    
+                    const shouldShowTrackButton = Boolean(
+                      order.shiprocketShipmentId ||
+                        order.trackingUrl ||
+                        order.awbCode ||
+                        order.shipmentStatus === "created" ||
+                        order.shipmentStatus === "awb_assigned" ||
+                        order.shipmentStatus === "pickup_scheduled" ||
+                        order.shipmentStatus === "in_transit"
                     )
 
                     return (
                       <div
                         key={order.id}
-                        className="rounded-xl border border-gray-200 bg-gray-50 p-5 hover:bg-white hover:shadow-md transition-all duration-300"
+                        className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-lg transition-all duration-300"
                       >
-                        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                          <div className="flex-1">
-                            <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <div className="flex h-full flex-col">
+                          <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-4">
+                            <div className="flex items-center gap-3">
                               {getStatusIcon(order.orderStatus)}
+                              <div>
+                                <p className="text-2xl font-bold text-gray-900 leading-none">
+                                  #{order.displayId || order.id}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-wrap justify-end gap-2">
                               <span
-                                className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(order.orderStatus)}`}
+                                className={`px-4 py-2 rounded-full text-xs font-semibold border ${getStatusColor(order.orderStatus)}`}
                               >
                                 {order.orderStatus}
                               </span>
 
+                              {order.shipmentStatus && order.shipmentStatus !== "not_created" && (
+                                <span className={`px-4 py-2 rounded-full text-xs font-semibold ${getShipmentBadge(order.shipmentStatus)}`}>
+                                  {order.shipmentStatus.replace(/_/g, " ")}
+                                </span>
+                              )}
+
                               {order.isPaid && (
-                                <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-green-100 text-green-700 border-green-200">
+                                <span className="px-4 py-2 rounded-full text-xs font-semibold border bg-green-100 text-green-700 border-green-200">
                                   Paid
                                 </span>
                               )}
+                            </div>
+                          </div>
 
-                              {order.refundStatus && order.refundStatus !== "not_requested" && (
-                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getRefundBadge(order.refundStatus)}`}>
-                                  Refund: {order.refundStatus}
-                                </span>
-                              )}
-
-                              {order.shipmentStatus && order.shipmentStatus !== "not_created" && (
-                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getShipmentBadge(order.shipmentStatus)}`}>
-                                  Shipment: {order.shipmentStatus}
-                                </span>
-                              )}
+                          <div className="space-y-4 py-5">
+                            <div className="space-y-3 text-[15px] text-gray-700">
+                              <div className="flex items-center gap-3">
+                                <Clock className="h-4 w-4 text-gray-500" />
+                                <span>{order.date}</span>
+                              </div>
+                              <div className="flex items-start gap-3">
+                                <MapPin className="h-4 w-4 text-gray-500 mt-1 shrink-0" />
+                                <span>{order.addressText || "Address not available"}</span>
+                              </div>
                             </div>
 
-                            <p className="text-sm text-gray-500 mb-1">
-                              Order ID: <span className="font-semibold text-gray-800">{order.id}</span>
-                            </p>
-                            <p className="text-sm text-gray-500 mb-3">
-                              Date: <span className="font-semibold text-gray-800">{order.date}</span>
-                            </p>
-
-                            <div className="space-y-1 mb-4">
-                              {order.items.map((item, index) => (
-                                <p key={index} className="text-sm text-gray-700">
-                                  {item}
-                                </p>
-                              ))}
+                            <div>
+                              <p className="text-[15px] font-semibold text-gray-800 mb-3">Items:</p>
+                              <ul className="space-y-2 text-[15px] text-gray-700">
+                                {order.items.map((item, index) => (
+                                  <li key={index} className="flex gap-2">
+                                    <span className="text-gray-400">•</span>
+                                    <span>{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
                             </div>
 
                             {shouldShowCourierBlock && (
-                              <div className="mb-4 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm">
+                              <div className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm space-y-1">
                                 {order.courierCompany && (
                                   <p className="text-gray-700">
                                     Courier: <span className="font-semibold">{order.courierCompany}</span>
                                   </p>
                                 )}
                                 {order.awbCode && (
-                                  <p className="text-gray-700 mt-1">
+                                  <p className="text-gray-700">
                                     AWB: <span className="font-semibold">{order.awbCode}</span>
                                   </p>
                                 )}
                                 {order.trackingUrl && (
-                                  <p className="text-gray-700 mt-1 break-all">
+                                  <p className="text-gray-700 break-all">
                                     Tracking: <span className="font-semibold">{order.trackingUrl}</span>
                                   </p>
                                 )}
@@ -852,11 +895,21 @@ function UserDashboardContent() {
                                 )}
                               </div>
                             )}
+
+                            {order.refundStatus && order.refundStatus !== "not_requested" && (
+                              <div>
+                                <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${getRefundBadge(order.refundStatus)}`}>
+                                  Refund: {order.refundStatus}
+                                </span>
+                              </div>
+                            )}
                           </div>
 
-                          <div className="md:text-right md:min-w-[190px]">
-                            <p className="text-sm text-gray-500">Total</p>
-                            <p className="text-xl font-bold text-gray-900">{order.totalFormatted}</p>
+                          <div className="mt-auto border-t border-gray-100 pt-5">
+                            <div className="flex items-center justify-between">
+                              <p className="text-[15px] font-medium text-gray-500">Total</p>
+                              <p className="text-2xl font-bold text-gray-900">{order.totalFormatted}</p>
+                            </div>
 
                             <div className="mt-4 flex flex-col gap-2">
                               {shouldShowTrackButton && (
@@ -1170,4 +1223,3 @@ export default function UserDashboard() {
     </Suspense>
   )
 }
-

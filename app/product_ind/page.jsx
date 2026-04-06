@@ -20,6 +20,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import API from "../../lib/api";
+import { resolveMediaUrl } from "../../lib/resolve-media";
 
 const splitList = (value) => {
   if (Array.isArray(value)) {
@@ -57,11 +58,11 @@ const normalizeProduct = (data = {}) => {
   const images = [];
 
   if (Array.isArray(data.images)) {
-    images.push(...data.images.filter(Boolean));
+    images.push(...data.images.filter(Boolean).map((image) => resolveMediaUrl(image, "")));
   }
 
-  if (data.image) images.push(data.image);
-  if (data.mainImage) images.push(data.mainImage);
+  if (data.image) images.push(resolveMediaUrl(data.image, ""));
+  if (data.mainImage) images.push(resolveMediaUrl(data.mainImage, ""));
 
   const benefits = splitList(data.benefits || data.keyBenefits);
   const howToUse = Array.isArray(data.howToUse) ? data.howToUse : splitList(data.howToUse);
@@ -96,10 +97,42 @@ const normalizeProduct = (data = {}) => {
     category: data.category || "human",
     status: data.status || (data.isActive === false ? "inactive" : "active"),
     isActive: data.isActive !== false,
-    rating: Number(data.rating || 4.8),
-    reviewsCount: Number(data.reviewsCount || data.totalReviews || 124),
+    rating: Number(data.rating || 0),
+    reviewsCount: Number(data.reviewsCount || data.totalReviews || 0),
   };
 };
+
+const formatReviewDate = (value) => {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+function RatingStars({ rating = 0, size = "w-5 h-5" }) {
+  const roundedRating = Math.round(Number(rating || 0));
+
+  return (
+    <div className="flex items-center">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <Star
+          key={index}
+          className={`${size} ${
+            index < roundedRating
+              ? "fill-yellow-400 text-yellow-400"
+              : "text-gray-300"
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
 
 function ProductInfo({ product, onAddToCart, onAddToWishlist, onBuyNow }) {
   const [quantity, setQuantity] = useState(1);
@@ -117,14 +150,11 @@ function ProductInfo({ product, onAddToCart, onAddToWishlist, onBuyNow }) {
       </h1>
 
       <div className="flex items-center gap-2">
-        <div className="flex items-center">
-          {[1, 2, 3, 4].map((star) => (
-            <Star key={star} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-          ))}
-          <Star className="w-5 h-5 text-gray-300" />
-        </div>
+        <RatingStars rating={product.rating} />
         <span className="text-base text-gray-600 ml-2">
-          {Number(product.rating || 4.8).toFixed(1)} ({product.reviewsCount || 124} reviews)
+          {product.reviewsCount > 0
+            ? `${Number(product.rating || 0).toFixed(1)} (${product.reviewsCount} reviews)`
+            : "No reviews yet"}
         </span>
       </div>
 
@@ -240,6 +270,165 @@ function ProductInfo({ product, onAddToCart, onAddToWishlist, onBuyNow }) {
           >
             Order Now
           </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProductReviewsSection({
+  product,
+  reviews,
+  reviewsLoading,
+  isLoggedIn,
+  reviewEligibility,
+  reviewForm,
+  setReviewForm,
+  reviewSubmitting,
+  onSubmitReview,
+  onLoginToReview,
+}) {
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
+      <div className="space-y-6 md:space-y-8">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900">Customer Reviews</h2>
+            <div className="mt-3 flex items-center gap-3">
+              <RatingStars rating={product?.rating} size="w-6 h-6" />
+              <p className="text-gray-700 font-medium">
+                {product?.reviewsCount > 0
+                  ? `${Number(product?.rating || 0).toFixed(1)} out of 5 from ${product.reviewsCount} review${product.reviewsCount === 1 ? "" : "s"}`
+                  : "No reviews yet"}
+              </p>
+            </div>
+          </div>
+
+          <div className="w-full md:max-w-md rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Write a Review</h3>
+
+            {!isLoggedIn ? (
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">
+                  Login required to submit a verified review.
+                </p>
+                <Button
+                  onClick={onLoginToReview}
+                  className="w-full bg-black text-white hover:bg-gray-800"
+                >
+                  Login to Review
+                </Button>
+              </div>
+            ) : reviewEligibility?.canReview ? (
+              <form
+                className="space-y-4"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  onSubmitReview();
+                }}
+              >
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Rating
+                  </label>
+                  <div className="flex items-center gap-2">
+                    {Array.from({ length: 5 }).map((_, index) => {
+                      const starValue = index + 1;
+                      return (
+                        <button
+                          key={starValue}
+                          type="button"
+                          onClick={() =>
+                            setReviewForm((prev) => ({ ...prev, rating: starValue }))
+                          }
+                          className="transition-transform hover:scale-110"
+                        >
+                          <Star
+                            className={`w-7 h-7 ${
+                              starValue <= Number(reviewForm.rating || 0)
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "text-gray-300"
+                            }`}
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Your Review
+                  </label>
+                  <textarea
+                    value={reviewForm.reviewText}
+                    onChange={(e) =>
+                      setReviewForm((prev) => ({
+                        ...prev,
+                        reviewText: e.target.value,
+                      }))
+                    }
+                    rows={4}
+                    maxLength={1000}
+                    placeholder="Share your genuine experience with this product"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-black"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={reviewSubmitting}
+                  className="w-full bg-black text-white hover:bg-gray-800 disabled:opacity-50"
+                >
+                  {reviewSubmitting ? "Submitting..." : "Submit Review"}
+                </Button>
+              </form>
+            ) : (
+              <p className="text-sm text-gray-600">
+                {reviewEligibility?.message ||
+                  "Only customers with delivered orders can review this product."}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {reviewsLoading ? (
+            <div className="rounded-2xl border border-gray-200 bg-white p-6 text-gray-500">
+              Loading reviews...
+            </div>
+          ) : reviews.length > 0 ? (
+            reviews.map((review) => (
+              <div
+                key={review._id || review.id}
+                className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-gray-900">
+                      {review?.user?.name || review?.userName || "Customer"}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {formatReviewDate(review?.createdAt || review?.date)}
+                    </p>
+                  </div>
+                  <RatingStars rating={review?.rating} />
+                </div>
+
+                <p className="mt-4 text-gray-700 leading-relaxed">
+                  {review?.reviewText || review?.text || ""}
+                </p>
+              </div>
+            ))
+          ) : (
+            <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-6 text-gray-500">
+              No customer reviews yet.
+            </div>
+          )}
+        </div>
+
+        <div className="my-6 md:my-8">
+          <hr className="border-blue-200 border-2" />
         </div>
       </div>
     </div>
@@ -537,8 +726,102 @@ function ProductDetailPageContent() {
 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [product, setProduct] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [reviewEligibility, setReviewEligibility] = useState({
+    canReview: false,
+    alreadyReviewed: false,
+    message: "",
+  });
+  const [reviewForm, setReviewForm] = useState({
+    rating: 5,
+    reviewText: "",
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const fetchProduct = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      try {
+        const response = await API.get(`/products/${productId}`);
+        const data = response.data?.product || response.data;
+        setProduct(normalizeProduct(data));
+      } catch (primaryError) {
+        const listResponse = await API.get("/products");
+        const products = Array.isArray(listResponse.data) ? listResponse.data : [];
+        const matchedProduct = products.find(
+          (item) => String(item._id || item.id) === String(productId)
+        );
+
+        if (!matchedProduct) {
+          throw primaryError;
+        }
+
+        setProduct(normalizeProduct(matchedProduct));
+      }
+    } catch (err) {
+      setError(err?.response?.data?.message || "Unable to load product.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchReviews = async () => {
+    if (!productId) return;
+
+    try {
+      setReviewsLoading(true);
+      const response = await API.get(`/reviews/product/${productId}`);
+      const reviewsList = Array.isArray(response.data)
+        ? response.data
+        : response.data?.reviews || [];
+
+      setReviews(reviewsList);
+    } catch (err) {
+      console.error("Failed to fetch reviews:", err);
+      setReviews([]);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  const fetchReviewEligibility = async () => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(Boolean(token));
+
+    if (!token || !productId) {
+      setReviewEligibility({
+        canReview: false,
+        alreadyReviewed: false,
+        message: "Login to submit a verified review.",
+      });
+      return;
+    }
+
+    try {
+      const response = await API.get(`/reviews/product/${productId}/eligibility`);
+      setReviewEligibility(
+        response.data || {
+          canReview: false,
+          alreadyReviewed: false,
+          message: "Unable to verify review eligibility.",
+        }
+      );
+    } catch (err) {
+      setReviewEligibility({
+        canReview: false,
+        alreadyReviewed: false,
+        message:
+          err?.response?.data?.message ||
+          "Only customers with delivered orders can review this product.",
+      });
+    }
+  };
 
   useEffect(() => {
     if (!productId) {
@@ -547,36 +830,9 @@ function ProductDetailPageContent() {
       return;
     }
 
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        setError("");
-
-        try {
-          const response = await API.get(`/products/${productId}`);
-          const data = response.data?.product || response.data;
-          setProduct(normalizeProduct(data));
-        } catch (primaryError) {
-          const listResponse = await API.get("/products");
-          const products = Array.isArray(listResponse.data) ? listResponse.data : [];
-          const matchedProduct = products.find(
-            (item) => String(item._id || item.id) === String(productId)
-          );
-
-          if (!matchedProduct) {
-            throw primaryError;
-          }
-
-          setProduct(normalizeProduct(matchedProduct));
-        }
-      } catch (err) {
-        setError(err?.response?.data?.message || "Unable to load product.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProduct();
+    fetchReviews();
+    fetchReviewEligibility();
   }, [productId]);
 
   const handleAddToCart = (selectedProduct, quantity = 1) => {
@@ -645,6 +901,13 @@ function ProductDetailPageContent() {
   const handleBuyNow = (selectedProduct, quantity = 1) => {
     if (!selectedProduct) return;
 
+    const token = localStorage.getItem("token");
+    if (!token) {
+      sessionStorage.setItem("redirectAfterLogin", `/product_ind?id=${selectedProduct.id}`);
+      router.push("/login");
+      return;
+    }
+
     localStorage.setItem(
       "buyNowItem",
       JSON.stringify({
@@ -654,6 +917,34 @@ function ProductDetailPageContent() {
     );
 
     router.push("/checkout");
+  };
+
+  const handleSubmitReview = async () => {
+    if (!product?.id) return;
+
+    try {
+      setReviewSubmitting(true);
+      await API.post(`/reviews/product/${product.id}`, {
+        rating: Number(reviewForm.rating || 0),
+        reviewText: reviewForm.reviewText,
+      });
+
+      setReviewForm({
+        rating: 5,
+        reviewText: "",
+      });
+
+      await Promise.all([fetchProduct(), fetchReviews(), fetchReviewEligibility()]);
+    } catch (err) {
+      alert(err?.response?.data?.message || "Unable to submit review.");
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
+
+  const handleLoginToReview = () => {
+    sessionStorage.setItem("redirectAfterLogin", `/product_ind?id=${product?.id || productId}`);
+    router.push("/login");
   };
 
   return (
@@ -679,6 +970,18 @@ function ProductDetailPageContent() {
               onAddToCart={handleAddToCart}
               onAddToWishlist={handleAddToWishlist}
               onBuyNow={handleBuyNow}
+            />
+            <ProductReviewsSection
+              product={product}
+              reviews={reviews}
+              reviewsLoading={reviewsLoading}
+              isLoggedIn={isLoggedIn}
+              reviewEligibility={reviewEligibility}
+              reviewForm={reviewForm}
+              setReviewForm={setReviewForm}
+              reviewSubmitting={reviewSubmitting}
+              onSubmitReview={handleSubmitReview}
+              onLoginToReview={handleLoginToReview}
             />
             <ProductDescription product={product} />
             <HowToUse steps={product.howToUse} />

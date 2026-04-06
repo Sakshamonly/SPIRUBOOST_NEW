@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Footer from "../components/usable/footer";
 import Navbar from "../components/usable/navbar";
+import API from "../../lib/api";
 
 export default function ContactPage() {
   const [mounted, setMounted] = useState(false);
@@ -29,14 +30,13 @@ export default function ContactPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    setTimeout(() => {
-      console.log('[v0] Form submitted:', formData);
+    try {
+      await API.post("/contact", formData)
       setSubmitted(true);
-      setIsLoading(false);
 
       setTimeout(() => {
         setFormData({
@@ -48,7 +48,11 @@ export default function ContactPage() {
         });
         setSubmitted(false);
       }, 3000);
-    }, 800);
+    } catch (error) {
+      alert(error?.response?.data?.message || "Unable to send message right now.")
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!mounted) {
@@ -298,10 +302,10 @@ export default function ContactPage() {
                     <div className="flex-1">
                       <p className="text-sm text-gray-600 mb-1">Email</p>
                       <a
-                        href="mailto:info@spiruswastha.com"
+                        href="mailto:support@spiruboost.com"
                         className="text-sm font-semibold text-gray-900 hover:text-blue-700 transition-colors"
                       >
-                        info@spiruswastha.com
+                        support@spiruboost.com
                       </a>
                     </div>
                   </div>

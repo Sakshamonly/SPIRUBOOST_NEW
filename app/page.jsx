@@ -8,6 +8,7 @@ import CartSidebar from './components/usable/cart';
 import { ProductCard } from './components/usable/product-card';
 import Link from 'next/link';
 import API from '../lib/api';
+import { resolveMediaUrl } from '../lib/resolve-media';
 
 export default function SpiruboostLanding() {
   const [activeFeature, setActiveFeature] = useState(0);
@@ -123,10 +124,14 @@ export default function SpiruboostLanding() {
             name: product.name || 'Product',
             price: Number(product.price || 0),
             countInStock: Number(product.countInStock ?? product.stock ?? 0),
-            image:
+            rating: Number(product.rating || 0),
+            reviewsCount: Number(product.reviewsCount || product.totalReviews || 0),
+            image: resolveMediaUrl(
               product.image ||
-              (Array.isArray(product.images) && product.images[0]) ||
-              'https://via.placeholder.com/600x600?text=Product',
+                (Array.isArray(product.images) && product.images[0]) ||
+                '',
+              'https://via.placeholder.com/600x600?text=Product'
+            ),
           }));
 
         setFeaturedProducts(normalized);
@@ -145,9 +150,11 @@ export default function SpiruboostLanding() {
     const selectedProduct = featuredProducts.find((p) => String(p.id) === String(productId));
     if (!selectedProduct) return;
 
+    const stockLimit = Number(selectedProduct.countInStock || 0);
+    if (stockLimit <= 0) return;
+
     const existingCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
     const existingItem = existingCart.find((item) => String(item.id) === String(selectedProduct.id));
-    const stockLimit = Number(selectedProduct.countInStock || 0);
     const currentQuantity = Number(existingItem?.quantity || 0);
     const nextQuantity = stockLimit > 0 ? Math.min(currentQuantity + 1, stockLimit) : currentQuantity + 1;
 
@@ -173,6 +180,14 @@ export default function SpiruboostLanding() {
   const handleBuyNow = (productId) => {
     const selectedProduct = featuredProducts.find((p) => String(p.id) === String(productId));
     if (!selectedProduct) return;
+    if (Number(selectedProduct.countInStock || 0) <= 0) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      sessionStorage.setItem("redirectAfterLogin", `/product_ind?id=${selectedProduct.id}`);
+      router.push("/login");
+      return;
+    }
 
     localStorage.setItem(
       'buyNowItem',
@@ -182,7 +197,7 @@ export default function SpiruboostLanding() {
       })
     );
 
-    window.location.href = '/checkout';
+    router.push('/checkout');
   };
 
   const handleProductClick = (productId) => {

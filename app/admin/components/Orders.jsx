@@ -49,6 +49,7 @@ export default function Orders() {
     return {
       raw: order,
       id: order._id,
+      displayId: order.orderNumber || order._id,
       customer: customerName,
       email: customerEmail,
       amount: Number(order.totalPrice || 0),
@@ -87,7 +88,7 @@ export default function Orders() {
     return orders.filter((order) => {
       const query = searchTerm.toLowerCase();
       const matchesSearch =
-        order.id.toLowerCase().includes(query) ||
+        order.displayId.toLowerCase().includes(query) ||
         order.customer.toLowerCase().includes(query) ||
         order.email.toLowerCase().includes(query);
 
@@ -150,7 +151,7 @@ export default function Orders() {
     const rows = [
       ["ID", "Customer", "Email", "Amount", "Status", "Payment Status", "Date"],
       ...filteredOrders.map((o) => [
-        o.id,
+        o.displayId,
         o.customer,
         o.email,
         o.amount,
@@ -389,7 +390,7 @@ export default function Orders() {
                 filteredOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {order.id}
+                        {order.displayId}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       <div className="font-semibold text-gray-800">
