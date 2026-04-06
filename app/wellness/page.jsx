@@ -224,27 +224,27 @@ export default function SpiruboostWellness() {
       icon: '🥚'
     },
     {
-      amount: '20 Carrots',
+      amount: '12 Carrots',
       equals: 'Beta-carotene equivalent',
       icon: '🥕'
     },
     {
-      amount: '8 Spinach Servings',
+      amount: '5 Bowls of Spinach' ,
       equals: 'Iron-rich green mineral support',
       icon: '🥬'
     },
     {
-      amount: '4 Glasses of Milk',
+      amount: '20 Glasses of Milk',
       equals: 'Daily B-vitamin nourishment',
       icon: '🥛'
     },
     {
-      amount: 'A Bowl of Leafy Greens',
+      amount: '10 Bowls',
       equals: 'Chlorophyll-rich phytonutrients',
       icon: '🌿'
     },
     {
-      amount: '10 Oranges',
+      amount: '40 Oranges',
       equals: 'Antioxidant equivalent',
       icon: '🍊'
     }

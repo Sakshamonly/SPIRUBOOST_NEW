@@ -181,7 +181,7 @@ export default function Footer() {
                     href="mailto:aarogyanutracecuticals@gmail.com"
                     className="text-xs text-gray-300 transition duration-300 hover:text-blue-400"
                   >
-                    aarogyanutracecuticals@gmail.com
+                    support@spiruboost.com
                   </a>
                 </div>
                 <div className="group flex cursor-pointer items-center gap-2">
@@ -190,7 +190,7 @@ export default function Footer() {
                     href="tel:+919258888127"
                     className="text-xs text-gray-300 transition duration-300 hover:text-blue-400"
                   >
-                    +91 92588 88127
+                    +91 8006000127
                   </a>
                 </div>
               </div>
