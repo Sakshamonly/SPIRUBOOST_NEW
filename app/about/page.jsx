@@ -174,8 +174,8 @@ export default function AboutPage() {
           </div>
 
 
-          <div className="relative group hidden md:block">
-            <div className="h-96 rounded-3xl overflow-hidden backdrop-blur-md border border-emerald-200/40 relative"
+          <div className="relative group">
+            <div className="h-64 sm:h-80 md:h-96 rounded-3xl overflow-hidden backdrop-blur-md border border-emerald-200/40 relative"
               style={{
                 background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(100, 200, 200, 0.08) 100%)',
               }}>
@@ -461,7 +461,7 @@ export default function AboutPage() {
               }}>
 
               {/* Image Placeholder - Full image area */}
-              <div className="relative h-56 overflow-hidden bg-linear-to-br from-emerald-100 via-cyan-100 to-blue-100 flex items-center justify-center">
+              <div className="relative h-64 overflow-hidden bg-linear-to-br from-emerald-100 via-cyan-100 to-blue-100 flex items-center justify-center">
                 <img 
                 src={member.image} 
                 alt={member.name}
@@ -592,7 +592,7 @@ export default function AboutPage() {
             </button>
 
             {/* Image Section */}
-            <div className="relative h-64 sm:h-80 overflow-hidden bg-linear-to-br from-emerald-100 via-cyan-100 to-blue-100 flex items-center justify-center">
+            <div className="relative h-72 sm:h-96 overflow-hidden bg-linear-to-br from-emerald-100 via-cyan-100 to-blue-100 flex items-center justify-center">
               <img 
                 src={selectedMember.image} 
                 alt={selectedMember.name}
