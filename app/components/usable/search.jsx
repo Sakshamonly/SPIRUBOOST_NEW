@@ -1,66 +1,69 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { X, Search } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { X, Search, Loader2 } from "lucide-react"
 import Link from "next/link"
+import API from "../../../lib/api"
+import { resolveMediaUrl } from "../../../lib/resolve-media"
+
+const normalizeProduct = (product, index) => ({
+  id: product?._id || product?.id || `product-${index}`,
+  name: product?.name || "Product",
+  image: resolveMediaUrl(
+    product?.image || (Array.isArray(product?.images) ? product.images[0] : ""),
+    "/placeholder.svg"
+  ),
+  href: `/product_ind?id=${product?._id || product?.id || ""}`,
+  category: product?.category || "",
+})
 
 export default function SearchOverlay({ isOpen, onClose }) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [searchResults, setSearchResults] = useState([])
-
-  const allProducts = [
-    {
-      id: 1,
-      name: "Spirulina Powder",
-      image: "/placeholder.svg?height=48&width=48",
-      href: "/product/spirulina-powder",
-    },
-    {
-      id: 2,
-      name: "Spirulina Tablets",
-      image: "/placeholder.svg?height=48&width=48",
-      href: "/product/spirulina-tablets",
-    },
-    {
-      id: 3,
-      name: "Spirulina Smoothie Mix",
-      image: "/placeholder.svg?height=48&width=48",
-      href: "/product/smoothie-mix",
-    },
-    {
-      id: 4,
-      name: "Spirulina Energy Bars",
-      image: "/placeholder.svg?height=48&width=48",
-      href: "/product/energy-bars",
-    },
-    { id: 5, name: "Spirulina Capsules", image: "/placeholder.svg?height=48&width=48", href: "/product/capsules" },
-    {
-      id: 6,
-      name: "Organic Spirulina Bulk",
-      image: "/placeholder.svg?height=48&width=48",
-      href: "/product/bulk-spirulina",
-    },
-  ]
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [hasLoaded, setHasLoaded] = useState(false)
 
   useEffect(() => {
-    if (searchTerm.length > 1) {
-      const filtered = allProducts.filter((product) => product.name.toLowerCase().includes(searchTerm.toLowerCase()))
-      setSearchResults(filtered)
-    } else {
-      setSearchResults([])
+    if (!isOpen || hasLoaded) return
+
+    const fetchProducts = async () => {
+      try {
+        setLoading(true)
+        const response = await API.get("/products")
+        const list = Array.isArray(response?.data) ? response.data : []
+        setProducts(list.map(normalizeProduct))
+        setHasLoaded(true)
+      } catch (error) {
+        console.error("Search products load failed:", error)
+        setProducts([])
+      } finally {
+        setLoading(false)
+      }
     }
-  }, [searchTerm])
+
+    fetchProducts()
+  }, [hasLoaded, isOpen])
+
+  const searchResults = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase()
+    if (term.length < 1) return []
+
+    return products
+      .filter((product) => product.name.toLowerCase().includes(term))
+      .slice(0, 8)
+  }, [products, searchTerm])
 
   useEffect(() => {
     if (!isOpen) {
       setSearchTerm("")
-      setSearchResults([])
     }
   }, [isOpen])
 
   return (
     <div
-      className={`font-sans fixed inset-0 z-50 bg-white/95 backdrop-blur-md transition-opacity duration-300 flex flex-col items-center pt-20 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+      className={`font-sans fixed inset-0 z-50 bg-white/95 backdrop-blur-md transition-opacity duration-300 flex flex-col items-center pt-20 ${
+        isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+      }`}
     >
       <button
         onClick={onClose}
@@ -82,11 +85,18 @@ export default function SearchOverlay({ isOpen, onClose }) {
           />
         </div>
 
-        {searchTerm.length > 0 && searchResults.length === 0 && (
+        {loading && (
+          <div className="mt-8 flex items-center justify-center gap-2 text-gray-500">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span>Loading products...</span>
+          </div>
+        )}
+
+        {!loading && searchTerm.length > 0 && searchResults.length === 0 && (
           <p className="text-center text-gray-500 mt-8">No products found for "{searchTerm}".</p>
         )}
 
-        {searchResults.length > 0 && (
+        {!loading && searchResults.length > 0 && (
           <div className="mt-8 bg-white rounded-lg shadow-lg max-h-96 overflow-y-auto">
             {searchResults.map((product) => (
               <Link
@@ -96,11 +106,16 @@ export default function SearchOverlay({ isOpen, onClose }) {
                 className="flex items-center space-x-4 p-4 hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100 last:border-b-0"
               >
                 <img
-                  src={product.image || "/placeholder.svg"}
+                  src={product.image}
                   alt={product.name}
-                  className="w-12 h-12 object-cover rounded-md"
+                  className="w-12 h-12 object-cover rounded-md bg-gray-100"
                 />
-                <span className="text-lg font-medium text-gray-800">{product.name}</span>
+                <div className="min-w-0">
+                  <span className="block text-lg font-medium text-gray-800 truncate">{product.name}</span>
+                  {product.category && (
+                    <span className="block text-sm text-gray-500 capitalize">{product.category}</span>
+                  )}
+                </div>
               </Link>
             ))}
           </div>

@@ -34,10 +34,15 @@ export default function AuthPage() {
   const [signInEmail, setSignInEmail] = useState('');
   const [signInPassword, setSignInPassword] = useState('');
   const [signInOtp, setSignInOtp] = useState('');
+  const [resetPasswordOtp, setResetPasswordOtp] = useState('');
+  const [resetNewPassword, setResetNewPassword] = useState('');
+  const [resetConfirmPassword, setResetConfirmPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [authMethod, setAuthMethod] = useState(null);
   const [signInErrors, setSignInErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showResetConfirmPassword, setShowResetConfirmPassword] = useState(false);
   const [signInSuccess, setSignInSuccess] = useState(false);
   const [signInLoading, setSignInLoading] = useState(false);
 
@@ -72,6 +77,12 @@ export default function AuthPage() {
     return errors;
   };
   const validateOtp = (otp) => /^\d{6}$/.test(otp);
+  const handleEnterAction = (event, action) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      action();
+    }
+  };
 
   const getErrorMessage = (error, fallback) =>
     error?.response?.data?.message || error?.response?.data?.error || fallback;
@@ -316,12 +327,18 @@ export default function AuthPage() {
     setSignInEmail('');
     setSignInPassword('');
     setSignInOtp('');
+    setResetPasswordOtp('');
+    setResetNewPassword('');
+    setResetConfirmPassword('');
     setRememberMe(false);
     setAuthMethod(null);
     setSignInStep('credentials');
     setSignInSuccess(false);
     setSignInErrors({});
     setSignInLoading(false);
+    setShowPassword(false);
+    setShowResetPassword(false);
+    setShowResetConfirmPassword(false);
   };
 
   const handleForgotPassword = async () => {
@@ -333,11 +350,82 @@ export default function AuthPage() {
     try {
       setSignInLoading(true);
       setSignInErrors({});
-      await API.post('/users/send-login-otp', { identifier: signInEmail });
-      setAuthMethod('otp');
-      setSignInStep('otp');
+      await API.post('/users/send-reset-password-otp', { identifier: signInEmail });
+      setSignInStep('forgot-otp');
     } catch (error) {
-      setSignInErrors({ api: getErrorMessage(error, 'Unable to send OTP.') });
+      setSignInErrors({ api: getErrorMessage(error, 'Unable to send password reset OTP.') });
+    } finally {
+      setSignInLoading(false);
+    }
+  };
+
+  const handleVerifyResetOtp = async () => {
+    const errors = {};
+
+    if (!resetPasswordOtp.trim()) {
+      errors.otp = 'OTP required';
+    } else if (!validateOtp(resetPasswordOtp)) {
+      errors.otp = 'OTP must be 6 digits';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setSignInErrors(errors);
+      return;
+    }
+
+    try {
+      setSignInLoading(true);
+      setSignInErrors({});
+      await API.post('/users/verify-reset-password-otp', {
+        identifier: signInEmail,
+        otp: resetPasswordOtp,
+      });
+      setSignInStep('forgot-reset');
+    } catch (error) {
+      setSignInErrors({ api: getErrorMessage(error, 'OTP verification failed.') });
+    } finally {
+      setSignInLoading(false);
+    }
+  };
+
+  const handleResetPasswordSubmit = async () => {
+    const errors = {};
+    const passwordErrors = validatePassword(resetNewPassword);
+
+    if (!resetNewPassword.trim()) {
+      errors.password = 'New password required';
+    } else if (passwordErrors.length > 0) {
+      errors.password = `Password must have: ${passwordErrors.join(', ')}`;
+    }
+
+    if (!resetConfirmPassword.trim()) {
+      errors.confirmPassword = 'Please confirm your password';
+    } else if (resetConfirmPassword !== resetNewPassword) {
+      errors.confirmPassword = 'Passwords do not match';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setSignInErrors(errors);
+      return;
+    }
+
+    try {
+      setSignInLoading(true);
+      setSignInErrors({});
+      await API.post('/users/reset-password', {
+        identifier: signInEmail,
+        otp: resetPasswordOtp,
+        newPassword: resetNewPassword,
+      });
+      setSignInErrors({ api: 'Password reset successful. Please sign in with your new password.' });
+      setSignInPassword('');
+      setResetPasswordOtp('');
+      setResetNewPassword('');
+      setResetConfirmPassword('');
+      setSignInStep('password');
+      setAuthMethod('password');
+    } catch (error) {
+      setSignInErrors({ api: getErrorMessage(error, 'Unable to reset password.') });
     } finally {
       setSignInLoading(false);
     }
@@ -550,6 +638,7 @@ export default function AuthPage() {
                           type="text"
                           value={signInEmail}
                           onChange={(e) => setSignInEmail(e.target.value)}
+                          onKeyDown={(e) => handleEnterAction(e, handleSignInNext)}
                           placeholder="your@email.com"
                           className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                         />
@@ -623,6 +712,7 @@ export default function AuthPage() {
                             type={showPassword ? 'text' : 'password'}
                             value={signInPassword}
                             onChange={(e) => setSignInPassword(e.target.value)}
+                            onKeyDown={(e) => handleEnterAction(e, handlePasswordSubmit)}
                             placeholder="••••••••"
                             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                           />
@@ -667,6 +757,114 @@ export default function AuthPage() {
                     </>
                   )}
 
+                  {signInStep === 'forgot-otp' && (
+                    <>
+                      <div className="bg-green-50 border border-green-300 rounded-lg p-3 mb-4">
+                        <p className="text-sm text-green-800">
+                          6-digit password reset OTP sent to your registered email
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 block mb-2">Reset OTP</label>
+                        <input
+                          type="text"
+                          value={resetPasswordOtp}
+                          onChange={(e) => setResetPasswordOtp(e.target.value.slice(0, 6))}
+                          onKeyDown={(e) => handleEnterAction(e, handleVerifyResetOtp)}
+                          placeholder="000000"
+                          maxLength="6"
+                          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-center text-lg tracking-widest"
+                        />
+                        {signInErrors.otp && (
+                          <p className="text-red-500 text-xs mt-1">{signInErrors.otp}</p>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={handleVerifyResetOtp}
+                        disabled={signInLoading}
+                        className="w-full bg-green-600 text-white font-bold py-2.5 rounded-lg hover:bg-green-700 transition-all text-sm disabled:opacity-50 mt-4"
+                      >
+                        {signInLoading ? 'Verifying...' : 'Verify OTP'}
+                      </button>
+
+                      <button
+                        onClick={() => setSignInStep('password')}
+                        className="w-full text-gray-600 py-2 text-sm hover:text-gray-800"
+                      >
+                        Back
+                      </button>
+                    </>
+                  )}
+
+                  {signInStep === 'forgot-reset' && (
+                    <>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 block mb-2">New Password</label>
+                        <div className="relative">
+                          <input
+                            type={showResetPassword ? 'text' : 'password'}
+                            value={resetNewPassword}
+                            onChange={(e) => setResetNewPassword(e.target.value)}
+                            onKeyDown={(e) => handleEnterAction(e, handleResetPasswordSubmit)}
+                            placeholder="••••••••"
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowResetPassword(!showResetPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                          >
+                            {showResetPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        {signInErrors.password && (
+                          <p className="text-red-500 text-xs mt-1">{signInErrors.password}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 block mb-2">Confirm Password</label>
+                        <div className="relative">
+                          <input
+                            type={showResetConfirmPassword ? 'text' : 'password'}
+                            value={resetConfirmPassword}
+                            onChange={(e) => setResetConfirmPassword(e.target.value)}
+                            onKeyDown={(e) => handleEnterAction(e, handleResetPasswordSubmit)}
+                            placeholder="••••••••"
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowResetConfirmPassword(!showResetConfirmPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                          >
+                            {showResetConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        {signInErrors.confirmPassword && (
+                          <p className="text-red-500 text-xs mt-1">{signInErrors.confirmPassword}</p>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={handleResetPasswordSubmit}
+                        disabled={signInLoading}
+                        className="w-full bg-green-600 text-white font-bold py-2.5 rounded-lg hover:bg-green-700 transition-all text-sm disabled:opacity-50 mt-4"
+                      >
+                        {signInLoading ? 'Resetting...' : 'Reset Password'}
+                      </button>
+
+                      <button
+                        onClick={() => setSignInStep('forgot-otp')}
+                        className="w-full text-gray-600 py-2 text-sm hover:text-gray-800"
+                      >
+                        Back
+                      </button>
+                    </>
+                  )}
+
                   {signInStep === 'otp' && (
                     <>
                       <div>
@@ -675,6 +873,7 @@ export default function AuthPage() {
                           type="text"
                           value={signInOtp}
                           onChange={(e) => setSignInOtp(e.target.value.slice(0, 6))}
+                          onKeyDown={(e) => handleEnterAction(e, handleSignInOtpSubmit)}
                           placeholder="000000"
                           maxLength="6"
                           className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-center text-lg tracking-widest"
@@ -729,6 +928,7 @@ export default function AuthPage() {
                           type="text"
                           value={signUpName}
                           onChange={(e) => setSignUpName(e.target.value)}
+                          onKeyDown={(e) => handleEnterAction(e, handleSignUpDetailsSubmit)}
                           placeholder="Your name"
                           className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                         />
@@ -743,6 +943,7 @@ export default function AuthPage() {
                           type="email"
                           value={signUpEmail}
                           onChange={(e) => setSignUpEmail(e.target.value)}
+                          onKeyDown={(e) => handleEnterAction(e, handleSignUpDetailsSubmit)}
                           placeholder="your@email.com"
                           className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                         />
@@ -757,6 +958,7 @@ export default function AuthPage() {
                           type="tel"
                           value={signUpPhone}
                           onChange={(e) => setSignUpPhone(e.target.value)}
+                          onKeyDown={(e) => handleEnterAction(e, handleSignUpDetailsSubmit)}
                           placeholder="9876543210"
                           className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                         />
@@ -772,6 +974,7 @@ export default function AuthPage() {
                             type={showSignUpPassword ? 'text' : 'password'}
                             value={signUpPassword}
                             onChange={(e) => setSignUpPassword(e.target.value)}
+                            onKeyDown={(e) => handleEnterAction(e, handleSignUpDetailsSubmit)}
                             placeholder="••••••••"
                             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                           />
@@ -847,6 +1050,7 @@ export default function AuthPage() {
                           type="text"
                           value={signUpOtp}
                           onChange={(e) => setSignUpOtp(e.target.value.slice(0, 6))}
+                          onKeyDown={(e) => handleEnterAction(e, handleSignUpOtpSubmit)}
                           placeholder="000000"
                           maxLength="6"
                           className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-center text-lg tracking-widest"
@@ -955,6 +1159,7 @@ export default function AuthPage() {
                         type="text"
                         value={signInEmail}
                         onChange={(e) => setSignInEmail(e.target.value)}
+                        onKeyDown={(e) => handleEnterAction(e, handleSignInNext)}
                         placeholder="your@email.com"
                         className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                       />
@@ -1024,11 +1229,12 @@ export default function AuthPage() {
                         </button>
                       </div>
                       <div className="relative">
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          value={signInPassword}
-                          onChange={(e) => setSignInPassword(e.target.value)}
-                          placeholder="••••••••"
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            value={signInPassword}
+                            onChange={(e) => setSignInPassword(e.target.value)}
+                            onKeyDown={(e) => handleEnterAction(e, handlePasswordSubmit)}
+                            placeholder="••••••••"
                           className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                         />
                         <button
@@ -1072,6 +1278,114 @@ export default function AuthPage() {
                   </>
                 )}
 
+                {signInStep === 'forgot-otp' && (
+                  <>
+                    <div className="bg-green-50 border border-green-300 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-green-800">
+                        6-digit password reset OTP sent to your registered email
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 block mb-2">Reset OTP</label>
+                      <input
+                        type="text"
+                        value={resetPasswordOtp}
+                        onChange={(e) => setResetPasswordOtp(e.target.value.slice(0, 6))}
+                        onKeyDown={(e) => handleEnterAction(e, handleVerifyResetOtp)}
+                        placeholder="000000"
+                        maxLength="6"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-center text-lg tracking-widest"
+                      />
+                      {signInErrors.otp && (
+                        <p className="text-red-500 text-xs mt-1">{signInErrors.otp}</p>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={handleVerifyResetOtp}
+                      disabled={signInLoading}
+                      className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-all text-sm disabled:opacity-50"
+                    >
+                      {signInLoading ? 'Verifying...' : 'Verify OTP'}
+                    </button>
+
+                    <button
+                      onClick={() => setSignInStep('password')}
+                      className="w-full text-gray-600 py-2 text-sm hover:text-gray-800"
+                    >
+                      Back
+                    </button>
+                  </>
+                )}
+
+                {signInStep === 'forgot-reset' && (
+                  <>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 block mb-2">New Password</label>
+                      <div className="relative">
+                        <input
+                          type={showResetPassword ? 'text' : 'password'}
+                          value={resetNewPassword}
+                          onChange={(e) => setResetNewPassword(e.target.value)}
+                          onKeyDown={(e) => handleEnterAction(e, handleResetPasswordSubmit)}
+                          placeholder="••••••••"
+                          className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowResetPassword(!showResetPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                        >
+                          {showResetPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      {signInErrors.password && (
+                        <p className="text-red-500 text-xs mt-1">{signInErrors.password}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 block mb-2">Confirm Password</label>
+                      <div className="relative">
+                        <input
+                          type={showResetConfirmPassword ? 'text' : 'password'}
+                          value={resetConfirmPassword}
+                          onChange={(e) => setResetConfirmPassword(e.target.value)}
+                          onKeyDown={(e) => handleEnterAction(e, handleResetPasswordSubmit)}
+                          placeholder="••••••••"
+                          className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowResetConfirmPassword(!showResetConfirmPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                        >
+                          {showResetConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      {signInErrors.confirmPassword && (
+                        <p className="text-red-500 text-xs mt-1">{signInErrors.confirmPassword}</p>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={handleResetPasswordSubmit}
+                      disabled={signInLoading}
+                      className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-all text-sm disabled:opacity-50"
+                    >
+                      {signInLoading ? 'Resetting...' : 'Reset Password'}
+                    </button>
+
+                    <button
+                      onClick={() => setSignInStep('forgot-otp')}
+                      className="w-full text-gray-600 py-2 text-sm hover:text-gray-800"
+                    >
+                      Back
+                    </button>
+                  </>
+                )}
+
                 {signInStep === 'otp' && (
                   <>
                     <div>
@@ -1080,6 +1394,7 @@ export default function AuthPage() {
                         type="text"
                         value={signInOtp}
                         onChange={(e) => setSignInOtp(e.target.value.slice(0, 6))}
+                        onKeyDown={(e) => handleEnterAction(e, handleSignInOtpSubmit)}
                         placeholder="000000"
                         maxLength="6"
                         className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-center text-lg tracking-widest"
@@ -1134,6 +1449,7 @@ export default function AuthPage() {
                         type="text"
                         value={signUpName}
                         onChange={(e) => setSignUpName(e.target.value)}
+                        onKeyDown={(e) => handleEnterAction(e, handleSignUpDetailsSubmit)}
                         placeholder="Your name"
                         className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                       />
@@ -1148,6 +1464,7 @@ export default function AuthPage() {
                         type="email"
                         value={signUpEmail}
                         onChange={(e) => setSignUpEmail(e.target.value)}
+                        onKeyDown={(e) => handleEnterAction(e, handleSignUpDetailsSubmit)}
                         placeholder="your@email.com"
                         className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                       />
@@ -1162,6 +1479,7 @@ export default function AuthPage() {
                         type="tel"
                         value={signUpPhone}
                         onChange={(e) => setSignUpPhone(e.target.value)}
+                        onKeyDown={(e) => handleEnterAction(e, handleSignUpDetailsSubmit)}
                         placeholder="9876543210"
                         className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                       />
@@ -1177,6 +1495,7 @@ export default function AuthPage() {
                           type={showSignUpPassword ? 'text' : 'password'}
                           value={signUpPassword}
                           onChange={(e) => setSignUpPassword(e.target.value)}
+                          onKeyDown={(e) => handleEnterAction(e, handleSignUpDetailsSubmit)}
                           placeholder="••••••••"
                           className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm"
                         />
@@ -1252,6 +1571,7 @@ export default function AuthPage() {
                         type="text"
                         value={signUpOtp}
                         onChange={(e) => setSignUpOtp(e.target.value.slice(0, 6))}
+                        onKeyDown={(e) => handleEnterAction(e, handleSignUpOtpSubmit)}
                         placeholder="000000"
                         maxLength="6"
                         className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-center text-lg tracking-widest"
