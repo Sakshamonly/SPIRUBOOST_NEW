@@ -7,6 +7,11 @@ import { Eye, EyeOff } from 'lucide-react';
 import Navbar from '../components/usable/navbar';
 import Footer from '../components/usable/footer';
 import API from '../../lib/api';
+import {
+  AUTH_CHANGED_EVENT,
+  readAuthSession,
+  saveAuthSession,
+} from '../../lib/auth-storage';
 
 function GoogleIcon() {
   return (
@@ -64,6 +69,39 @@ export default function AuthPage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const syncAuthUi = () => {
+      const { token, user, rememberMe: storedRememberMe } = readAuthSession();
+
+      setRememberMe(storedRememberMe);
+
+      if (token && user) {
+        redirectUser(user);
+        return;
+      }
+
+      setMode('signin');
+      resetSignIn();
+      setSignUpErrors({});
+      setSignUpSuccess(false);
+      setSignUpLoading(false);
+    };
+
+    syncAuthUi();
+
+    window.addEventListener(AUTH_CHANGED_EVENT, syncAuthUi);
+    window.addEventListener('pageshow', syncAuthUi);
+    window.addEventListener('focus', syncAuthUi);
+
+    return () => {
+      window.removeEventListener(AUTH_CHANGED_EVENT, syncAuthUi);
+      window.removeEventListener('pageshow', syncAuthUi);
+      window.removeEventListener('focus', syncAuthUi);
+    };
+  }, []);
+
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validatePhone = (phone) => /^\d{10}$/.test(phone.replace(/\D/g, ''));
   const validatePassword = (password) => {
@@ -88,8 +126,6 @@ export default function AuthPage() {
     error?.response?.data?.message || error?.response?.data?.error || fallback;
 
   const saveAuthData = (data, shouldRemember = rememberMe) => {
-    if (typeof window === 'undefined') return;
-
     const token =
       data?.token ||
       data?.accessToken ||
@@ -101,15 +137,11 @@ export default function AuthPage() {
       data?.result?.user ||
       null;
 
-    if (token) {
-      localStorage.setItem('token', token);
-      if (shouldRemember) localStorage.setItem('rememberMe', 'true');
-      else localStorage.removeItem('rememberMe');
-    }
-
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    }
+    saveAuthSession({
+      token,
+      user,
+      rememberMe: shouldRemember,
+    });
   };
 
   const redirectUser = (user) => {
@@ -121,7 +153,8 @@ export default function AuthPage() {
       sessionStorage.removeItem('redirectAfterLogin');
     }
 
-    router.push(destination);
+    router.replace(destination);
+    router.refresh();
   };
 
   const handleGoogleCredentialResponse = async (googleResponse) => {

@@ -13,6 +13,7 @@ import {
   Home,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { clearAuthSession } from "../../../lib/auth-storage"
 
 export default function Sidebar({ activeSection, setActiveSection }) {
   const router = useRouter()
@@ -29,10 +30,9 @@ export default function Sidebar({ activeSection, setActiveSection }) {
   ]
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
-    localStorage.removeItem("rememberMe")
+    clearAuthSession()
     router.replace("/login")
+    router.refresh()
   }
 
   return (

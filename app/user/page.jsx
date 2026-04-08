@@ -28,6 +28,7 @@ import {
 import Navbar from "@/app/components/usable/navbar"
 import Footer from "@/app/components/usable/footer"
 import API from "../../lib/api"
+import { clearAuthSession } from "../../lib/auth-storage"
 
 function UserDashboardContent() {
 
@@ -477,10 +478,9 @@ function UserDashboardContent() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
-    localStorage.removeItem("rememberMe")
+    clearAuthSession()
     router.replace("/login")
+    router.refresh()
   }
 
   const userDetails = useMemo(() => {

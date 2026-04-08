@@ -7,6 +7,7 @@ import { Search, ShoppingCart, User, X } from "lucide-react";
 import CartSidebar from "./cart";
 import SearchOverlay from "./search";
 import Image from "next/image";
+import { AUTH_CHANGED_EVENT, clearAuthSession, readAuthSession } from "../../../lib/auth-storage";
 
 const HamburgerIcon = ({ isOpen }) => (
   <div className="flex h-6 w-6 flex-col items-center justify-center space-y-1">
@@ -41,31 +42,19 @@ export default function Navbar() {
   const toggleAccountDropdown = () => setIsAccountDropdownOpen(!isAccountDropdownOpen);
 
   const syncAuthState = () => {
-    if (typeof window === "undefined") return;
-
-    const token = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("user");
-
-    if (token && savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser);
-        setIsLoggedIn(true);
-        setUserData(parsedUser);
-      } catch (error) {
-        console.error("Failed to parse user data:", error);
-        setIsLoggedIn(false);
-        setUserData(null);
-      }
-    } else {
-      setIsLoggedIn(false);
-      setUserData(null);
-    }
+    const { token, user } = readAuthSession();
+    setIsLoggedIn(Boolean(token && user));
+    setUserData(user);
   };
 
   useEffect(() => {
     syncAuthState();
 
     const handleStorageChange = () => {
+      syncAuthState();
+    };
+
+    const handleAuthChange = () => {
       syncAuthState();
     };
 
@@ -76,25 +65,24 @@ export default function Navbar() {
     };
 
     window.addEventListener("storage", handleStorageChange);
+    window.addEventListener(AUTH_CHANGED_EVENT, handleAuthChange);
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener(AUTH_CHANGED_EVENT, handleAuthChange);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const handleSignOut = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("rememberMe");
-    sessionStorage.removeItem("redirectAfterLogin");
-
+    clearAuthSession();
     setIsLoggedIn(false);
     setUserData(null);
     setIsAccountDropdownOpen(false);
     setIsMenuOpen(false);
-    router.push("/");
+    router.replace("/login");
+    router.refresh();
   };
 
   const handleMyProfile = () => {
