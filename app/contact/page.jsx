@@ -329,10 +329,10 @@ export default function ContactPage() {
                     <div className="flex-1">
                       <p className="text-sm text-gray-600 mb-1">Phone</p>
                       <a
-                        href="tel:+919258888127"
+                        href="tel:+918006000127"
                         className="text-sm font-semibold text-gray-900 hover:text-blue-700 transition-colors"
                       >
-                        +91 92588 88127
+                        +91 8006000127
                       </a>
                     </div>
                   </div>
@@ -362,11 +362,10 @@ export default function ContactPage() {
                     <div className="flex-1">
                       <p className="text-sm text-gray-600 mb-1">Address</p>
                       <p className="text-sm font-semibold text-gray-900 leading-relaxed">
-                        2nd Floor, Flat No. A/203,<br />
-                        Dev Prayag Residency, Opp. Shraddhadip Society,<br />
-                        Causeway Singapor Road, Surat,<br />
-                        Gujarat, 395004
-                      </p>
+                      GF-39, The Hub,<br />
+                      Runway Suits, Gaur Yamuna City,<br />
+                      YEIDA Sec-19, Greater Noida,<br />
+                      Uttar Pradesh 203201</p>
                     </div>
                   </div>
                 </div>
