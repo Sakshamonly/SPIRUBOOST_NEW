@@ -207,8 +207,8 @@ const BlogPage = () => {
                     href={`/blog/${post.id}`}
                     className="group cursor-pointer"
                   >
-                    <div className="mb-6 md:mb-8 overflow-hidden rounded-lg">
-                      <div className="text-6xl md:text-7xl lg:text-8xl group-hover:scale-105 transition-transform duration-500">
+                    <div className="mb-6 md:mb-8 overflow-visible rounded-lg flex items-center justify-center py-4 md:py-6">
+                      <div className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl group-hover:scale-105 transition-transform duration-500 leading-none flex items-center justify-center h-20 sm:h-24 md:h-28 lg:h-32">
                         {post.image}
                       </div>
                     </div>
@@ -257,8 +257,8 @@ const BlogPage = () => {
                     href={`/blog/${post.id}`}
                     className="group cursor-pointer flex flex-col h-full bg-white rounded-lg p-6 md:p-8 shadow-sm hover:shadow-lg transition-shadow duration-300"
                   >
-                    <div className="mb-6 md:mb-8 overflow-hidden rounded">
-                      <div className="text-5xl md:text-6xl group-hover:scale-110 transition-transform duration-500">
+                    <div className="mb-6 md:mb-8 overflow-visible rounded flex items-center justify-center py-3 md:py-4">
+                      <div className="text-4xl sm:text-5xl md:text-6xl group-hover:scale-110 transition-transform duration-500 leading-none flex items-center justify-center h-16 sm:h-20 md:h-24">
                         {post.image}
                       </div>
                     </div>

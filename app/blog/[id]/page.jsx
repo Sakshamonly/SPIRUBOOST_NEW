@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Share2, Heart } from "lucide-react";
+import { ArrowLeft, Share2, Heart, Copy, Check } from "lucide-react";
 import { useParams } from "next/navigation";
 
 const BlogDetail = () => {
   const params = useParams();
   const postId = parseInt(params.id);
   const [isLiked, setIsLiked] = useState(false);
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   // Add smooth scrolling
   useEffect(() => {
@@ -189,6 +191,66 @@ const BlogDetail = () => {
 
   const post = blogPosts.find((p) => p.id === postId);
 
+  // Share functionality
+  const handleShare = async () => {
+    const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+    const shareTitle = post?.title || "Check out this blog post";
+    const shareText = post?.excerpt || "Read this interesting article";
+
+    // Try native share API first
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
+        });
+        return;
+      } catch (error) {
+        console.log("Share cancelled or failed");
+      }
+    }
+
+    // Fallback: Show share menu with copy option
+    setShareMenuOpen(!shareMenuOpen);
+  };
+
+  const copyToClipboard = () => {
+    const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+    navigator.clipboard.writeText(shareUrl);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
+  };
+
+  const shareOnSocial = (platform) => {
+    const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+    const title = post?.title || "Check out this blog post";
+    const text = post?.excerpt || "Read this interesting article";
+    let url = "";
+
+    switch (platform) {
+      case "facebook":
+        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+        break;
+      case "twitter":
+        url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(title)}`;
+        break;
+      case "linkedin":
+        url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+        break;
+      case "whatsapp":
+        url = `https://wa.me/?text=${encodeURIComponent(title + " " + shareUrl)}`;
+        break;
+      case "email":
+        url = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text + "\n\n" + shareUrl)}`;
+        break;
+      default:
+        return;
+    }
+
+    window.open(url, "_blank", "width=600,height=400");
+  };
+
   if (!post) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -283,7 +345,7 @@ const BlogDetail = () => {
           {/* Article Footer */}
           <div className="mt-20 pt-12 border-t border-gray-200">
             <div className="flex flex-wrap items-center justify-between gap-6">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 relative">
                 <button
                   onClick={() => setIsLiked(!isLiked)}
                   className={`flex items-center gap-2 px-6 py-3 font-light tracking-wide transition-all duration-300 border border-gray-300 ${
@@ -296,10 +358,92 @@ const BlogDetail = () => {
                   {isLiked ? "Liked" : "Like"}
                 </button>
 
-                <button className="flex items-center gap-2 px-6 py-3 font-light tracking-wide text-gray-900 border border-gray-300 hover:bg-gray-50 transition-all duration-300">
-                  <Share2 className="w-4 h-4" />
-                  Share
-                </button>
+                <div className="relative">
+                  <button
+                    onClick={handleShare}
+                    className="flex items-center gap-2 px-6 py-3 font-light tracking-wide text-gray-900 border border-gray-300 hover:bg-gray-50 transition-all duration-300"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share
+                  </button>
+
+                  {/* Share Menu */}
+                  {shareMenuOpen && (
+                    <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg z-50 min-w-max">
+                      <button
+                        onClick={copyToClipboard}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 text-left text-sm font-light text-gray-900 border-b border-gray-200"
+                      >
+                        {copySuccess ? (
+                          <>
+                            <Check className="w-4 h-4 text-green-600" />
+                            <span>Copied to clipboard!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4" />
+                            <span>Copy link</span>
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          shareOnSocial("facebook");
+                          setShareMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 text-left text-sm font-light text-gray-900 border-b border-gray-200"
+                      >
+                        <span className="text-lg">f</span>
+                        <span>Share on Facebook</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          shareOnSocial("twitter");
+                          setShareMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 text-left text-sm font-light text-gray-900 border-b border-gray-200"
+                      >
+                        <span className="text-lg">𝕏</span>
+                        <span>Share on X</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          shareOnSocial("linkedin");
+                          setShareMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 text-left text-sm font-light text-gray-900 border-b border-gray-200"
+                      >
+                        <span className="text-lg">in</span>
+                        <span>Share on LinkedIn</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          shareOnSocial("whatsapp");
+                          setShareMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 text-left text-sm font-light text-gray-900 border-b border-gray-200"
+                      >
+                        <span className="text-lg">💬</span>
+                        <span>Share on WhatsApp</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          shareOnSocial("email");
+                          setShareMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 text-left text-sm font-light text-gray-900"
+                      >
+                        <span className="text-lg">✉️</span>
+                        <span>Share via Email</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="text-sm text-gray-600 font-light">
@@ -328,8 +472,8 @@ const BlogDetail = () => {
                   href={`/blog/${relPost.id}`}
                   className="group cursor-pointer"
                 >
-                  <div className="mb-6 overflow-hidden">
-                    <div className="text-5xl group-hover:scale-110 transition-transform duration-500">
+                  <div className="mb-6 overflow-visible rounded flex items-center justify-center py-3">
+                    <div className="text-4xl sm:text-5xl group-hover:scale-110 transition-transform duration-500 leading-none flex items-center justify-center h-16 sm:h-20">
                       {relPost.image}
                     </div>
                   </div>
